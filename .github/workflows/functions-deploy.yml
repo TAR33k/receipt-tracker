@@ -8,7 +8,6 @@ on:
       - "src/ReceiptTracker.Core/**"
       - "src/ReceiptTracker.Infrastructure/**"
       - ".github/workflows/functions-deploy.yml"
-
   workflow_dispatch:
 
 jobs:
@@ -16,11 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
 
@@ -29,12 +26,25 @@ jobs:
           dotnet restore ReceiptTracker.sln
           dotnet build src/ReceiptTracker.Functions/ReceiptTracker.Functions.csproj --configuration Release --no-restore
 
-      - name: Publish Functions
-        run: dotnet publish src/ReceiptTracker.Functions/ReceiptTracker.Functions.csproj --configuration Release --output ./publish/functions --no-build
+      - name: Publish
+        run: |
+          dotnet publish src/ReceiptTracker.Functions/ReceiptTracker.Functions.csproj --configuration Release --output ./publish/functions --no-restore
+
+      - name: Create deployment zip
+        run: |
+          cd ./publish/functions
+          zip -r ../../functions-deploy.zip .
+          cd ../..
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure Functions
-        uses: azure/functions-action@v1
-        with:
-          app-name: "func-receipttracker-dev-7742"
-          publish-profile: ${{ secrets.AZURE_FUNCTIONS_PUBLISH_PROFILE }}
-          package: ./publish/functions
+        run: |
+          az functionapp deployment source config-zip --resource-group rg-receipttracker-dev --name func-receipttracker-dev-2727 --src functions-deploy.zip
+
+      - name: Azure Logout
+        if: always()
+        run: az logout
