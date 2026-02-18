@@ -1,0 +1,38 @@
+name: Deploy React Frontend to Azure Blob Storage
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ReceiptTracker.Web/**"
+      - ".github/workflows/frontend-deploy.yml"
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: src/ReceiptTracker.Web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: src/ReceiptTracker.Web
+
+      - name: Build React app
+        run: npm run build
+        working-directory: src/ReceiptTracker.Web
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Upload to Azure Blob Storage
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name streceipts2727 --destination '$web' --source src/ReceiptTracker.Web/dist --overwrite true --connection-string "${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}"
