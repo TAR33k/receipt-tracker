@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ReceiptTracker.Core\ReceiptTracker.Core.csproj" />
     <ProjectReference Include="..\..\src\ReceiptTracker.Infrastructure\ReceiptTracker.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\ReceiptTracker.Api\ReceiptTracker.Api.csproj" />
   </ItemGroup>
 
 </Project>

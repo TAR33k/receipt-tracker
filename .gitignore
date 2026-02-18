@@ -151,3 +151,5 @@ __azurite_db*
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+!src/ReceiptTracker.Api/appsettings.json
