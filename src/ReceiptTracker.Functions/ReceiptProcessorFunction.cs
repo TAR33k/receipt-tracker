@@ -29,38 +29,27 @@ public class ReceiptProcessorFunction
     /// </summary>
     [Function("ReceiptProcessor")]
     public async Task Run(
-        [BlobTrigger("receipts-quarantine/{blobName}", Connection = "AzureWebJobsStorage")]
+    [BlobTrigger("receipts-quarantine/{userId}/{fileName}", Connection = "AzureWebJobsStorage")]
         Stream receiptStream,
-        string blobName)
+        string userId,
+        string fileName)
     {
-        _logger.LogInformation("ReceiptProcessor triggered. Blob: {BlobName}", blobName);
+        var blobName = $"{userId}/{fileName}";
+        _logger.LogInformation("ReceiptProcessor triggered. BlobName: {BlobName}", blobName);
 
-        var segments = blobName.Split('/');
-        if (segments.Length != 2)
-        {
-            _logger.LogError(
-                "Unexpected blob name format: '{BlobName}'. Expected '{{userId}}/{{receiptId}}{{ext}}'",
-                blobName);
-            return;
-        }
-
-        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(segments[1]);
+        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
         if (!Guid.TryParse(filenameWithoutExtension, out var receiptId))
         {
-            _logger.LogError(
-                "Could not parse receipt ID from blob filename: '{Filename}'",
-                segments[1]);
+            _logger.LogError("Could not parse receipt ID from blob filename: '{FileName}'", fileName);
             return;
         }
 
-        var userId = segments[0];
         var receipt = await _receiptRepository.GetByIdAsync(receiptId, userId);
 
         if (receipt is null)
         {
             _logger.LogError(
-                "No receipt record found for ID {ReceiptId} and user '{UserId}'. " +
-                "The blob may have been uploaded without a corresponding API call.",
+                "No receipt record found for ID {ReceiptId} and user '{UserId}'.",
                 receiptId, userId);
             return;
         }
@@ -77,28 +66,18 @@ public class ReceiptProcessorFunction
             receipt.ErrorMessage = extractionResult.ErrorMessage;
             receipt.ProcessedAt = DateTime.UtcNow;
             await _receiptRepository.UpdateAsync(receipt);
-
-            _logger.LogWarning(
-                "Receipt {ReceiptId} processing failed: {Error}",
-                receiptId, extractionResult.ErrorMessage);
-
+            _logger.LogWarning("Receipt {ReceiptId} processing failed: {Error}", receiptId, extractionResult.ErrorMessage);
             return;
         }
 
         receipt.MerchantName = extractionResult.MerchantName;
         receipt.MerchantNameConfidence = extractionResult.MerchantNameConfidence;
-
         receipt.TotalAmount = extractionResult.TotalAmount;
         receipt.TotalAmountConfidence = extractionResult.TotalAmountConfidence;
         receipt.Currency = extractionResult.Currency;
-
         receipt.TransactionDate = extractionResult.TransactionDate;
         receipt.TransactionDateConfidence = extractionResult.TransactionDateConfidence;
-
-        receipt.Status = extractionResult.NeedsReview
-            ? ReceiptStatus.NeedsReview
-            : ReceiptStatus.Completed;
-
+        receipt.Status = extractionResult.NeedsReview ? ReceiptStatus.NeedsReview : ReceiptStatus.Completed;
         receipt.ProcessedAt = DateTime.UtcNow;
 
         await _receiptRepository.UpdateAsync(receipt);
