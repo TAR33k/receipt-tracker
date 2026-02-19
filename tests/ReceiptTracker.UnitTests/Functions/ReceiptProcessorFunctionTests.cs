@@ -37,7 +37,7 @@ public class ReceiptProcessorFunctionTests
     [Fact]
     public async Task Run_HighConfidenceExtraction_SetsStatusCompleted()
     {
-        var (receiptId, blobName, receipt) = SetupReceipt("test-user");
+        var (receiptId, userId, fileName, blobName) = SetupReceipt("test-user");
 
         _mockDocumentService
             .Setup(d => d.ExtractReceiptDataAsync(It.IsAny<Stream>()))
@@ -54,7 +54,7 @@ public class ReceiptProcessorFunctionTests
                 NeedsReview = false
             });
 
-        await _function.Run(new MemoryStream(), blobName);
+        await _function.Run(new MemoryStream(), userId, fileName);
 
         _mockRepository.Verify(r => r.UpdateAsync(It.Is<Receipt>(x =>
             x.Status == ReceiptStatus.Completed &&
@@ -70,7 +70,7 @@ public class ReceiptProcessorFunctionTests
     [Fact]
     public async Task Run_LowConfidenceExtraction_SetsStatusNeedsReview()
     {
-        var (_, blobName, _) = SetupReceipt("test-user");
+        var (_, userId, fileName, blobName) = SetupReceipt("test-user");
 
         _mockDocumentService
             .Setup(d => d.ExtractReceiptDataAsync(It.IsAny<Stream>()))
@@ -84,7 +84,7 @@ public class ReceiptProcessorFunctionTests
                 NeedsReview = true
             });
 
-        await _function.Run(new MemoryStream(), blobName);
+        await _function.Run(new MemoryStream(), userId, fileName);
 
         _mockRepository.Verify(r => r.UpdateAsync(It.Is<Receipt>(x =>
             x.Status == ReceiptStatus.NeedsReview
@@ -96,7 +96,7 @@ public class ReceiptProcessorFunctionTests
     [Fact]
     public async Task Run_ExtractionFails_SetsStatusFailed()
     {
-        var (_, blobName, _) = SetupReceipt("test-user");
+        var (_, userId, fileName, _) = SetupReceipt("test-user");
 
         _mockDocumentService
             .Setup(d => d.ExtractReceiptDataAsync(It.IsAny<Stream>()))
@@ -106,7 +106,7 @@ public class ReceiptProcessorFunctionTests
                 ErrorMessage = "Document Intelligence could not identify a receipt in the uploaded image."
             });
 
-        await _function.Run(new MemoryStream(), blobName);
+        await _function.Run(new MemoryStream(), userId, fileName);
 
         _mockRepository.Verify(r => r.UpdateAsync(It.Is<Receipt>(x =>
             x.Status == ReceiptStatus.Failed &&
@@ -119,7 +119,7 @@ public class ReceiptProcessorFunctionTests
     [Fact]
     public async Task Run_BeforeExtraction_SetsStatusProcessing()
     {
-        var (_, blobName, _) = SetupReceipt("test-user");
+        var (_, userId, fileName, _) = SetupReceipt("test-user");
         var processingStatusSet = false;
 
         _mockRepository
@@ -131,25 +131,17 @@ public class ReceiptProcessorFunctionTests
             .Setup(d => d.ExtractReceiptDataAsync(It.IsAny<Stream>()))
             .ReturnsAsync(new ReceiptExtractionResult { Success = true, NeedsReview = false });
 
-        await _function.Run(new MemoryStream(), blobName);
+        await _function.Run(new MemoryStream(), userId, fileName);
 
         processingStatusSet.Should().BeTrue("the receipt must be marked Processing before the AI call");
     }
 
     [Fact]
-    public async Task Run_InvalidBlobNameFormat_DoesNothing()
-    {
-        await _function.Run(new MemoryStream(), "invalid-no-separator.jpg");
-
-        _mockRepository.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
-        _mockDocumentService.Verify(d => d.ExtractReceiptDataAsync(It.IsAny<Stream>()), Times.Never);
-    }
-
-    [Fact]
     public async Task Run_BlobNameWithNonGuidFilename_DoesNothing()
     {
-        await _function.Run(new MemoryStream(), "test-user/not-a-guid.jpg");
+        await _function.Run(new MemoryStream(), "test-user", "not-a-guid.jpg");
 
+        _mockRepository.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
         _mockDocumentService.Verify(d => d.ExtractReceiptDataAsync(It.IsAny<Stream>()), Times.Never);
     }
 
@@ -157,13 +149,13 @@ public class ReceiptProcessorFunctionTests
     public async Task Run_ReceiptNotFoundInDatabase_DoesNothing()
     {
         var receiptId = Guid.NewGuid();
-        var blobName = $"test-user/{receiptId}.jpg";
+        var fileName = $"{receiptId}.jpg";
 
         _mockRepository
             .Setup(r => r.GetByIdAsync(receiptId, "test-user"))
             .ReturnsAsync((Receipt?)null);
 
-        await _function.Run(new MemoryStream(), blobName);
+        await _function.Run(new MemoryStream(), "test-user", fileName);
 
         _mockDocumentService.Verify(d => d.ExtractReceiptDataAsync(It.IsAny<Stream>()), Times.Never);
     }
@@ -171,7 +163,7 @@ public class ReceiptProcessorFunctionTests
     [Fact]
     public async Task Run_BlobMoveFails_ReceiptStillCompleted()
     {
-        var (_, blobName, _) = SetupReceipt("test-user");
+        var (_, userId, fileName, _) = SetupReceipt("test-user");
 
         _mockDocumentService
             .Setup(d => d.ExtractReceiptDataAsync(It.IsAny<Stream>()))
@@ -181,7 +173,7 @@ public class ReceiptProcessorFunctionTests
             .Setup(b => b.MoveBlobToProcessedAsync(It.IsAny<string>()))
             .ThrowsAsync(new Exception("Storage service unavailable"));
 
-        var act = async () => await _function.Run(new MemoryStream(), blobName);
+        var act = async () => await _function.Run(new MemoryStream(), userId, fileName);
         await act.Should().NotThrowAsync("blob move failure must not propagate to the caller");
 
         _mockRepository.Verify(r => r.UpdateAsync(It.Is<Receipt>(x =>
@@ -189,10 +181,12 @@ public class ReceiptProcessorFunctionTests
         )), Times.AtLeastOnce);
     }
 
-    private (Guid receiptId, string blobName, Receipt receipt) SetupReceipt(string userId)
+    private (Guid receiptId, string userId, string fileName, string blobName) SetupReceipt(string userId)
     {
         var receiptId = Guid.NewGuid();
-        var blobName = $"{userId}/{receiptId}.jpg";
+        var fileName = $"{receiptId}.jpg";
+        var blobName = $"{userId}/{fileName}";
+
         var receipt = new Receipt
         {
             Id = receiptId,
@@ -211,6 +205,6 @@ public class ReceiptProcessorFunctionTests
             .Setup(r => r.UpdateAsync(It.IsAny<Receipt>()))
             .ReturnsAsync((Receipt r) => r);
 
-        return (receiptId, blobName, receipt);
+        return (receiptId, userId, fileName, blobName);
     }
 }
