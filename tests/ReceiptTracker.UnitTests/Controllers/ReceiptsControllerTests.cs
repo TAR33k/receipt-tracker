@@ -101,9 +101,7 @@ public class ReceiptsControllerTests
             MerchantName: "Konzum d.d.",
             TotalAmount: null,
             TransactionDate: null,
-            Currency: "BAM",
-            TaxId: null,
-            FiscalReceiptNumber: null
+            Currency: "BAM"
         );
 
         var result = await _controller.SubmitReview(receipt.Id, review);
@@ -130,7 +128,7 @@ public class ReceiptsControllerTests
             .ReturnsAsync(receipt);
 
         var result = await _controller.SubmitReview(receipt.Id, new ReceiptReviewDto(
-            null, null, null, null, null, null));
+            null, null, null, null));
 
         result.Should().BeOfType<BadRequestObjectResult>();
     }
@@ -143,7 +141,7 @@ public class ReceiptsControllerTests
             .ReturnsAsync((Receipt?)null);
 
         var result = await _controller.SubmitReview(Guid.NewGuid(), new ReceiptReviewDto(
-            null, null, null, null, null, null));
+            null, null, null, null));
 
         result.Should().BeOfType<NotFoundResult>();
     }

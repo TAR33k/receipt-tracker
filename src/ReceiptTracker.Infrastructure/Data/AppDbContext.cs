@@ -33,12 +33,6 @@ public class AppDbContext : DbContext
             entity.Property(r => r.MerchantName)
                 .HasMaxLength(512);
 
-            entity.Property(r => r.TaxId)
-                .HasMaxLength(64);
-
-            entity.Property(r => r.FiscalReceiptNumber)
-                .HasMaxLength(128);
-
             entity.Property(r => r.Currency)
                 .HasMaxLength(10);
 

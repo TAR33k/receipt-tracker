@@ -6,8 +6,6 @@ public record ReceiptDto(
     string? MerchantName,
     decimal? TotalAmount,
     DateTime? TransactionDate,
-    string? FiscalReceiptNumber,
-    string? TaxId,
     string? Currency,
     double? MerchantNameConfidence,
     double? TotalAmountConfidence,

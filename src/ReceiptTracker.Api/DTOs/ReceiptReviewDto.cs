@@ -4,7 +4,5 @@ public record ReceiptReviewDto(
     string? MerchantName,
     decimal? TotalAmount,
     DateTime? TransactionDate,
-    string? Currency,
-    string? TaxId,
-    string? FiscalReceiptNumber
+    string? Currency
 );
