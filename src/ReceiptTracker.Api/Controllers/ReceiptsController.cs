@@ -129,8 +129,6 @@ public class ReceiptsController : ControllerBase
         if (review.TotalAmount.HasValue) receipt.TotalAmount = review.TotalAmount;
         if (review.TransactionDate.HasValue) receipt.TransactionDate = review.TransactionDate;
         if (review.Currency is not null) receipt.Currency = review.Currency;
-        if (review.TaxId is not null) receipt.TaxId = review.TaxId;
-        if (review.FiscalReceiptNumber is not null) receipt.FiscalReceiptNumber = review.FiscalReceiptNumber;
 
         receipt.Status = ReceiptStatus.Completed;
         receipt.ProcessedAt = DateTime.UtcNow;
@@ -154,8 +152,6 @@ public class ReceiptsController : ControllerBase
         r.MerchantName,
         r.TotalAmount,
         r.TransactionDate,
-        r.FiscalReceiptNumber,
-        r.TaxId,
         r.Currency,
         r.MerchantNameConfidence,
         r.TotalAmountConfidence,

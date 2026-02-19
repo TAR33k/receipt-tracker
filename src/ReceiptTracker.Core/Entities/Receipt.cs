@@ -20,8 +20,6 @@ public class Receipt
     public string? MerchantName { get; set; }
     public decimal? TotalAmount { get; set; }
     public DateTime? TransactionDate { get; set; }
-    public string? TaxId { get; set; } // JIB number
-    public string? FiscalReceiptNumber { get; set; }
     public string? Currency { get; set; }
 
     // AI confidence scores (0.0 – 1.0)
