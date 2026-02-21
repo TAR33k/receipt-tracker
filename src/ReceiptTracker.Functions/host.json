@@ -12,7 +12,10 @@
       "default": "Information",
       "Host.Results": "Error",
       "Function": "Information",
-      "Host.Aggregator": "Trace"
+      "Host.Aggregator": "Trace",
+      "Host.Triggers": "Trace",
+      "Microsoft.Azure.WebJobs.Extensions.Storage": "Trace",
+      "Azure.Storage": "Information"
     }
   },
   "functionTimeout": "00:05:00"
