@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useUserId } from "@/hooks/useUserId";
 import UserSetup from "@/pages/UserSetupPage";
 import LandingPage from "@/pages/LandingPage";
-import Dashboard from "@/pages/Dashboard";
+import Dashboard from "@/pages/DashboardPage";
 import ReceiptDetailPage from "@/pages/ReceiptDetailPage";
 
 const queryClient = new QueryClient({
