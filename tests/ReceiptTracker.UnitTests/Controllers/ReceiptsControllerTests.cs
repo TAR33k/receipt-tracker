@@ -8,6 +8,8 @@ using ReceiptTracker.Api.DTOs;
 using ReceiptTracker.Core.Entities;
 using ReceiptTracker.Core.Enums;
 using ReceiptTracker.Core.Interfaces;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ReceiptTracker.UnitTests.Controllers;
 
@@ -148,8 +150,18 @@ public class ReceiptsControllerTests
 
     private void SetUserId(string userId)
     {
-        var httpContext = new DefaultHttpContext();
-        httpContext.Request.Headers["X-User-Id"] = userId;
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, userId),
+        };
+        var identity = new ClaimsIdentity(claims, authenticationType: "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        var httpContext = new DefaultHttpContext
+        {
+            User = principal
+        };
+
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext

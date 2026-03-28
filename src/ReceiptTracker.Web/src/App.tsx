@@ -1,11 +1,19 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  SignedIn,
+  SignedOut,
+  useAuth as useClerkAuth,
+} from "@clerk/clerk-react";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { useUserId } from "@/hooks/useUserId";
-import UserSetup from "@/pages/UserSetupPage";
+import { setTokenProvider } from "@/auth/clerkConfig";
+import { Loader2 } from "lucide-react";
 import LandingPage from "@/pages/LandingPage";
 import Dashboard from "@/pages/DashboardPage";
 import ReceiptDetailPage from "@/pages/ReceiptDetailPage";
+import SignInPage from "@/pages/SignInPage";
+import SignUpPage from "@/pages/SignUpPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,30 +28,93 @@ const queryClient = new QueryClient({
   },
 });
 
-function AppRoutes() {
-  const { userId } = useUserId();
+function TokenProvider() {
+  const { getToken } = useClerkAuth();
 
-  if (!userId) {
+  useEffect(() => {
+    setTokenProvider(() => getToken());
+  }, [getToken]);
+
+  return null;
+}
+
+function AppRoutes() {
+  const { isLoaded } = useClerkAuth();
+
+  if (!isLoaded) {
     return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/welcome" element={<UserSetup />} />
-          <Route path="*" element={<LandingPage />} />
-        </Routes>
-      </BrowserRouter>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   return (
-    <BrowserRouter>
+    <>
+      <SignedIn>
+        <TokenProvider />
+      </SignedIn>
+
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/receipts/:id" element={<ReceiptDetailPage />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/sign-in/*" element={<SignInPage />} />
+        <Route path="/sign-up/*" element={<SignUpPage />} />
+
+        <Route
+          path="/"
+          element={
+            <>
+              <SignedIn>
+                <Navigate to="/dashboard" replace />
+              </SignedIn>
+              <SignedOut>
+                <LandingPage />
+              </SignedOut>
+            </>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <>
+              <SignedIn>
+                <Dashboard />
+              </SignedIn>
+              <SignedOut>
+                <Navigate to="/" replace />
+              </SignedOut>
+            </>
+          }
+        />
+        <Route
+          path="/receipts/:id"
+          element={
+            <>
+              <SignedIn>
+                <ReceiptDetailPage />
+              </SignedIn>
+              <SignedOut>
+                <Navigate to="/sign-in" replace />
+              </SignedOut>
+            </>
+          }
+        />
+
+        <Route
+          path="*"
+          element={
+            <>
+              <SignedIn>
+                <Navigate to="/dashboard" replace />
+              </SignedIn>
+              <SignedOut>
+                <Navigate to="/" replace />
+              </SignedOut>
+            </>
+          }
+        />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
 

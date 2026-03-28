@@ -1,12 +1,36 @@
 using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
-using ReceiptTracker.Api.Filters;
 using ReceiptTracker.Core.Interfaces;
 using ReceiptTracker.Infrastructure.Data;
 using ReceiptTracker.Infrastructure.Repositories;
 using ReceiptTracker.Infrastructure.Services;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+// Authentication
+var clerkAuthority = builder.Configuration["Clerk:Authority"]
+    ?? throw new InvalidOperationException("Clerk:Authority is not configured.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = clerkAuthority;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            NameClaimType = JwtRegisteredClaimNames.Sub,
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -59,8 +83,6 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "Receipt processing API"
     });
-
-    options.OperationFilter<UserIdHeaderOperationFilter>();
 });
 
 var app = builder.Build();
@@ -90,5 +112,9 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseCors("FrontendPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 app.Run();
