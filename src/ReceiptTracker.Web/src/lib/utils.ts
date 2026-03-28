@@ -131,3 +131,110 @@ export function formatAmountCompact(amount: number, currency?: string): string {
 
   return formatAmount(amount, currencyCode);
 }
+
+export function normalizeMerchantName(name: string | null | undefined): string {
+  if (!name) return "";
+
+  let normalizedName = name
+    .replace(/["'”’‘“]/g, "")
+    .replace(/[\s\-_]+/g, " ")
+    .trim()
+    .toLowerCase();
+
+  const suffixPattern =
+    /(?:j[.,]\s*)?(?:d|cl|1|&|ol|c)?[.,]\s*[o0c][.,]\s*[o0c][.,]?|\b(?:doo|d00|jdoo|sro|dno|dd|ad|md|pj|sp|vl)\b|\bd\s*o\s*o\b|\b(?:d[.,]\s*d|a[.,]\s*d|j[.,]\s*d|s[.,]\s*p|p[.,]\s*j|v[.,]\s*l)[.,]?|\bs[.,]\s*r[.,]\s*o[.,]?|\bspol\s*s\s*r[.,]\s*o[.,]?|o\.o\./g;
+
+  const match = suffixPattern.exec(normalizedName);
+
+  if (match) {
+    if (match.index === 0) {
+      normalizedName = normalizedName.replace(suffixPattern, "");
+    } else {
+      normalizedName = normalizedName.substring(0, match.index);
+    }
+  }
+
+  return normalizedName.replace(/[,.\-\s]+$/, "").trim();
+}
+
+export function formatMerchantName(name: string | null | undefined): string {
+  if (!name) return "Unknown";
+
+  const normalized = normalizeMerchantName(name);
+
+  if (!normalized) return "Unknown";
+
+  const acronyms = new Set([
+    "d.o.o.",
+    "a.d.",
+    "d.d.",
+    "s.r.o.",
+    "spol.",
+    "s.r.o",
+    "j.d.o.o.",
+    "d.n.o.",
+    "o.o.",
+    "p.j.",
+    "pj",
+    "md",
+    "doo",
+    "sp",
+    "s.p.",
+  ]);
+
+  return normalized
+    .split(" ")
+    .map((word) => {
+      if (acronyms.has(word)) {
+        return word;
+      }
+      return word.toUpperCase();
+    })
+    .join(" ");
+}
+
+export function getMerchantGroupInfo(
+  receipts: Array<{ merchantName?: string | null }>,
+): Map<
+  string,
+  { displayName: string; count: number; originalNames: string[] }
+> {
+  const groups = new Map<
+    string,
+    { displayName: string; count: number; originalNames: string[] }
+  >();
+
+  for (const receipt of receipts) {
+    if (!receipt.merchantName) continue;
+
+    const normalized = normalizeMerchantName(receipt.merchantName);
+    if (!normalized) continue;
+
+    const existing = groups.get(normalized);
+    if (existing) {
+      existing.count++;
+      existing.originalNames.push(receipt.merchantName);
+
+      const nameFrequency = new Map<string, number>();
+      for (const name of existing.originalNames) {
+        nameFrequency.set(name, (nameFrequency.get(name) || 0) + 1);
+      }
+
+      const mostCommon = [...nameFrequency.entries()].sort(
+        (a, b) => b[1] - a[1],
+      )[0]?.[0];
+
+      if (mostCommon) {
+        existing.displayName = formatMerchantName(mostCommon);
+      }
+    } else {
+      groups.set(normalized, {
+        displayName: formatMerchantName(receipt.merchantName),
+        count: 1,
+        originalNames: [receipt.merchantName],
+      });
+    }
+  }
+
+  return groups;
+}
