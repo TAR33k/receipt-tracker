@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReceiptTracker.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ReceiptTracker.Infrastructure.Data;
 namespace ReceiptTracker.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260328160833_ExpandReceiptData")]
+    partial class ExpandReceiptData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,13 +138,6 @@ namespace ReceiptTracker.Infrastructure.Data.Migrations
                             b1.Property<double>("CityConfidence")
                                 .HasColumnType("float");
 
-                            b1.Property<string>("CountryRegion")
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)");
-
-                            b1.Property<double>("CountryRegionConfidence")
-                                .HasColumnType("float");
-
                             b1.Property<string>("FullAddress")
                                 .HasMaxLength(500)
                                 .HasColumnType("nvarchar(500)");
@@ -168,13 +164,6 @@ namespace ReceiptTracker.Infrastructure.Data.Migrations
                                 .HasColumnType("nvarchar(200)");
 
                             b1.Property<double>("RoadConfidence")
-                                .HasColumnType("float");
-
-                            b1.Property<string>("State")
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)");
-
-                            b1.Property<double>("StateConfidence")
                                 .HasColumnType("float");
 
                             b1.Property<string>("StreetAddress")
