@@ -30,6 +30,7 @@ jobs:
         working-directory: src/ReceiptTracker.Web
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
 
       - name: Upload to Azure Blob Storage
         uses: azure/CLI@v2
