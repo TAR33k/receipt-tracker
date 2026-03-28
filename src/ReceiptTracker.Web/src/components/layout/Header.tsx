@@ -1,15 +1,14 @@
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useUserId } from "@/hooks/useUserId";
+import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 export default function Header({ isLandingPage }: { isLandingPage: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
-  const { userId, clearUserId } = useUserId();
+  const { userDisplayName, isAuthenticated, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -78,35 +77,47 @@ export default function Header({ isLandingPage }: { isLandingPage: boolean }) {
           </nav>
         )}
 
-        {!userId && (
+        {!isAuthenticated && (
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               className="hidden sm:block text-[#8A8F98] hover:text-white hover:bg-white/5"
-              onClick={() => navigate("/welcome")}
+              onClick={() => navigate("/sign-in")}
             >
               Sign In
             </Button>
             <Button
               className="btn-primary"
-              onClick={() => navigate("/welcome")}
+              onClick={() => navigate("/sign-up")}
             >
               Get Started
             </Button>
           </div>
         )}
 
-        {userId && (
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-[#8A8F98] hidden sm:block font-mono tracking-wide">
-              <span className="text-[#EDEDEF]">{userId}</span>
+        {isAuthenticated && (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#5e6ad2] to-[#6872d9] flex items-center justify-center shadow-lg shadow-[#5E6AD2]/20">
+              <span className="text-xs font-semibold text-white">
+                {userDisplayName
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join("")
+                  .toUpperCase() || "U"}
+              </span>
+            </div>
+
+            <span className="hidden sm:block text-sm text-[#EDEDEF] mr-4">
+              {userDisplayName || "User"}
             </span>
+
+            <div className="hidden sm:block w-px h-6 bg-white/10" />
+
             <Button
               variant="ghost"
-              size="icon"
-              className="h-9 w-9 text-[#8A8F98] hover:text-[#EDEDEF] hover:bg-white/[0.05] rounded-lg transition-all duration-200"
-              onClick={clearUserId}
-              title="Sign out"
+              className="text-[#8A8F98] hover:text-white hover:bg-[#5E6AD2]/80"
+              onClick={signOut}
             >
               <LogOut className="h-4 w-4" />
             </Button>

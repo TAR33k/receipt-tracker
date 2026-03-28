@@ -4,9 +4,13 @@ using ReceiptTracker.Core.Entities;
 using ReceiptTracker.Core.Enums;
 using ReceiptTracker.Core.Helpers;
 using ReceiptTracker.Core.Interfaces;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ReceiptTracker.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
@@ -142,8 +146,14 @@ public class ReceiptsController : ControllerBase
 
     private string GetUserId()
     {
-        var userId = Request.Headers["X-User-Id"].FirstOrDefault();
-        return string.IsNullOrWhiteSpace(userId) ? "anonymous" : userId;
+        var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                    ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+            throw new UnauthorizedAccessException(
+                "Token does not contain a valid 'sub' claim.");
+
+        return userId;
     }
 
     private static ReceiptDto MapToDto(Receipt r) => new(

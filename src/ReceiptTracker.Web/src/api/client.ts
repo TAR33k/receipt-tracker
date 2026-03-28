@@ -1,9 +1,5 @@
+import { resolveToken } from "@/auth/clerkConfig";
 const BASE_URL = import.meta.env.VITE_API_URL ?? "";
-const USER_ID_KEY = "receipt_tracker_user_id";
-
-function getUserId(): string {
-  return localStorage.getItem(USER_ID_KEY) ?? "anonymous";
-}
 
 export class ApiError extends Error {
   constructor(
@@ -19,10 +15,12 @@ export async function apiRequest<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
+  const token = await resolveToken();
+
   const response = await fetch(`${BASE_URL}${path}`, {
     ...options,
     headers: {
-      "X-User-Id": getUserId(),
+      Authorization: `Bearer ${token}`,
       ...options.headers,
     },
   });

@@ -104,7 +104,7 @@ function Hero() {
             <Button
               size="lg"
               className="btn-primary h-14 px-8 text-base"
-              onClick={() => navigate("/welcome")}
+              onClick={() => navigate("/sign-up")}
             >
               Start tracking free
               <ArrowRight className="w-5 h-5 ml-2" />
@@ -366,7 +366,15 @@ function Technology() {
                   Functions, Azure SQL Database, Azure Storage, and Azure
                   Document Intelligence.
                 </p>
-                <Button className="btn-primary">
+                <Button
+                  className="btn-primary"
+                  onClick={() =>
+                    window.open(
+                      "https://github.com/TAR33k/receipt-tracker",
+                      "_blank",
+                    )
+                  }
+                >
                   View on GitHub
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -394,6 +402,7 @@ function Technology() {
 }
 
 function CTASection() {
+  const navigate = useNavigate();
   return (
     <section className="relative py-24 sm:py-32">
       <div className="max-w-4xl mx-auto px-6 text-center">
@@ -418,6 +427,7 @@ function CTASection() {
               <Button
                 size="lg"
                 className="btn-primary h-14 px-8 text-base w-full sm:w-auto"
+                onClick={() => navigate("/sign-up")}
               >
                 <ScanLine className="w-5 h-5 mr-2" />
                 Get Started

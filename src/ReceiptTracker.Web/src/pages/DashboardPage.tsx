@@ -26,19 +26,17 @@ import {
   Cell,
 } from "recharts";
 import { getReceipts, uploadReceipt } from "@/api/receipts";
-import { useUserId } from "@/hooks/useUserId";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import type { Receipt } from "@/types/receipt";
 import { cn, formatAmount, DEFAULT_CURRENCY } from "@/lib/utils";
 import ReceiptCard from "@/components/receipts/ReceiptCard";
 import Layout from "@/components/layout/Layout";
 
-function WelcomeHeader({ userId }: { userId: string }) {
+function WelcomeHeader({ userName }: { userName: string }) {
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-
-  const shortId = userId.slice(0, 8);
 
   return (
     <motion.div
@@ -49,7 +47,7 @@ function WelcomeHeader({ userId }: { userId: string }) {
     >
       <div className="flex items-center gap-1 mb-2">
         <span className="text-[#8A8F98] text-sm">{greeting},</span>
-        <span className="text-[#EDEDEF] text-sm font-medium">{shortId}</span>
+        <span className="text-[#EDEDEF] text-sm font-medium">{userName}</span>
       </div>
       <h1 className="text-3xl sm:text-4xl font-bold text-white">
         Your <span className="text-gradient-accent">Dashboard</span>
@@ -466,7 +464,7 @@ function MobileUploadModal({
   );
 }
 export default function Dashboard() {
-  const { userId } = useUserId();
+  const { userDisplayName } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [mobileUploadOpen, setMobileUploadOpen] = useState(false);
@@ -512,14 +510,9 @@ export default function Dashboard() {
       (r) => r.status !== "Uploaded" && r.status !== "Processing",
     ) || [];
 
-  if (!userId) {
-    navigate("/");
-    return null;
-  }
-
   return (
     <Layout>
-      <WelcomeHeader userId={userId} />
+      <WelcomeHeader userName={userDisplayName || "User"} />
 
       <div className="grid grid-cols-1 gap-6 mb-8">
         <div className="space-y-6">
