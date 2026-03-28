@@ -9,13 +9,17 @@ import {
   AlertTriangle,
   XCircle,
   Clock,
+  MapPin,
+  ShoppingCart,
+  ReceiptIcon,
+  Calculator,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import ReceiptStatusBadge from "@/components/receipts/ReceiptStatusBadge";
 import ReviewForm from "@/components/receipts/ReviewForm";
 import { getReceipt } from "@/api/receipts";
-import type { Receipt } from "@/types/receipt";
+import type { Receipt, ReceiptItem, TaxDetail } from "@/types/receipt";
 import { TERMINAL_STATUSES } from "@/types/receipt";
 import {
   cn,
@@ -165,28 +169,250 @@ function CompletedBanner() {
 
 function ExtractedFields({ receipt }: { receipt: Receipt }) {
   return (
-    <div className="glass card-spotlight divide-y divide-white/[0.06] rounded-2xl overflow-hidden">
-      <div className="px-6">
-        <FieldRow
-          label="Merchant"
-          value={receipt.merchantName}
-          confidence={receipt.merchantNameConfidence}
-        />
+    <div className="space-y-6">
+      <div className="glass card-spotlight divide-y divide-white/[0.06] rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 bg-white/[0.02]">
+          <h3 className="text-sm font-medium text-[#EDEDEF] flex items-center gap-2">
+            <ReceiptIcon className="w-4 h-4 text-[#5E6AD2]" />
+            Basic Information
+          </h3>
+        </div>
+        <div className="grid grid-cols-2">
+          <div className="px-6">
+            <FieldRow
+              label="Merchant"
+              value={receipt.merchantName}
+              confidence={receipt.merchantNameConfidence}
+            />
+          </div>
+          {receipt.receiptType && (
+            <div className="px-6">
+              <FieldRow
+                label="Receipt Type"
+                value={receipt.receiptType}
+                confidence={receipt.receiptTypeConfidence}
+              />
+            </div>
+          )}
+        </div>
+        <div className="px-6">
+          <FieldRow
+            label="Total"
+            value={formatAmountSimple(receipt.totalAmount, receipt.currency)}
+            confidence={receipt.totalAmountConfidence}
+          />
+        </div>
+        {receipt.totalTax !== null && (
+          <div className="px-6">
+            <FieldRow
+              label="Total Tax"
+              value={formatAmountSimple(
+                receipt.totalTax,
+                receipt.totalTaxCurrency ?? receipt.currency,
+              )}
+              confidence={receipt.totalTaxConfidence}
+            />
+          </div>
+        )}
+        <div className="grid grid-cols-2">
+          <div className="px-6">
+            <FieldRow
+              label="Transaction Date"
+              value={formatDate(receipt.transactionDate, "long")}
+              confidence={receipt.transactionDateConfidence}
+            />
+          </div>
+          {receipt.transactionTime && (
+            <div className="px-6">
+              <FieldRow
+                label="Transaction Time"
+                value={receipt.transactionTime.substring(0, 5)}
+                confidence={receipt.transactionTimeConfidence}
+              />
+            </div>
+          )}
+        </div>
+        {receipt.countryRegion && (
+          <div className="px-6">
+            <FieldRow
+              label="Country/Region"
+              value={receipt.countryRegion}
+              confidence={receipt.countryRegionConfidence}
+            />
+          </div>
+        )}
       </div>
-      <div className="px-6">
-        <FieldRow
-          label="Total"
-          value={formatAmountSimple(receipt.totalAmount, receipt.currency)}
-          confidence={receipt.totalAmountConfidence}
-        />
-      </div>
-      <div className="px-6">
-        <FieldRow
-          label="Transaction date"
-          value={formatDate(receipt.transactionDate, "long")}
-          confidence={receipt.transactionDateConfidence}
-        />
-      </div>
+
+      {receipt.merchantAddress && (
+        <div className="glass card-spotlight divide-y divide-white/[0.06] rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 bg-white/[0.02]">
+            <h3 className="text-sm font-medium text-[#EDEDEF] flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#5E6AD2]" />
+              Merchant Address
+            </h3>
+          </div>
+          {receipt.merchantAddress.fullAddress && (
+            <div className="px-6">
+              <FieldRow
+                label="Full Address"
+                value={receipt.merchantAddress.fullAddress}
+                confidence={receipt.merchantAddress.fullAddressConfidence}
+              />
+            </div>
+          )}
+          {receipt.merchantAddress.streetAddress && (
+            <div className="px-6">
+              <FieldRow
+                label="Street Address"
+                value={receipt.merchantAddress.streetAddress}
+                confidence={receipt.merchantAddress.streetAddressConfidence}
+              />
+            </div>
+          )}
+          <div className="grid grid-cols-2">
+            {receipt.merchantAddress.road && (
+              <div className="px-6">
+                <FieldRow
+                  label="Road"
+                  value={receipt.merchantAddress.road}
+                  confidence={receipt.merchantAddress.roadConfidence}
+                />
+              </div>
+            )}
+            {receipt.merchantAddress.houseNumber && (
+              <div className="px-6">
+                <FieldRow
+                  label="House Number"
+                  value={receipt.merchantAddress.houseNumber}
+                  confidence={receipt.merchantAddress.houseNumberConfidence}
+                />
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-2">
+            {receipt.merchantAddress.city && (
+              <div className="px-6">
+                <FieldRow
+                  label="City"
+                  value={receipt.merchantAddress.city}
+                  confidence={receipt.merchantAddress.cityConfidence}
+                />
+              </div>
+            )}
+            {receipt.merchantAddress.postalCode && (
+              <div className="px-6">
+                <FieldRow
+                  label="Postal Code"
+                  value={receipt.merchantAddress.postalCode}
+                  confidence={receipt.merchantAddress.postalCodeConfidence}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {receipt.items.length > 0 && (
+        <div className="glass card-spotlight rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 bg-white/[0.02] border-b border-white/[0.06]">
+            <h3 className="text-sm font-medium text-[#EDEDEF] flex items-center gap-2">
+              <ShoppingCart className="w-4 h-4 text-[#5E6AD2]" />
+              Items ({receipt.items.length})
+            </h3>
+          </div>
+          <div className="divide-y divide-white/[0.06]">
+            {receipt.items.map((item: ReceiptItem, index: number) => (
+              <div key={index} className="px-6 py-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-[#EDEDEF] truncate">
+                      {item.description ?? item.content ?? `Item ${index + 1}`}
+                    </p>
+                    {item.quantity !== null && (
+                      <p className="text-xs text-[#8A8F98] mt-0.5">
+                        Qty: {item.quantity}
+                        {item.price !== null && (
+                          <span className="ml-2">
+                            ×{" "}
+                            {formatAmountSimple(item.price, item.priceCurrency)}
+                          </span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-[#EDEDEF]">
+                      {formatAmountSimple(
+                        item.totalPrice,
+                        item.totalPriceCurrency ?? receipt.currency,
+                      )}
+                    </p>
+                    {(item.descriptionConfidence < 0.8 ||
+                      item.totalPriceConfidence < 0.8) && (
+                      <span className="text-[10px] text-amber-400">
+                        Low confidence
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {receipt.taxDetails.length > 0 && (
+        <div className="glass card-spotlight rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 bg-white/[0.02] border-b border-white/[0.06]">
+            <h3 className="text-sm font-medium text-[#EDEDEF] flex items-center gap-2">
+              <Calculator className="w-4 h-4 text-[#5E6AD2]" />
+              Tax Details
+            </h3>
+          </div>
+          <div className="divide-y divide-white/[0.06]">
+            {receipt.taxDetails.map((tax: TaxDetail, index: number) => (
+              <div key={index} className="px-6 py-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-[#EDEDEF]">
+                      {tax.description ?? tax.content ?? `Tax ${index + 1}`}
+                    </p>
+                    {tax.rate !== null && (
+                      <p className="text-xs text-[#8A8F98] mt-0.5">
+                        Rate: {(tax.rate * 100).toFixed(0)}%
+                      </p>
+                    )}
+                    {tax.netAmount !== null && (
+                      <p className="text-xs text-[#8A8F98]">
+                        Net:{" "}
+                        {formatAmountSimple(
+                          tax.netAmount,
+                          tax.netAmountCurrency ?? receipt.currency,
+                        )}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    {tax.amount !== null && (
+                      <p className="text-sm font-medium text-[#EDEDEF]">
+                        {formatAmountSimple(
+                          tax.amount,
+                          tax.amountCurrency ?? receipt.currency,
+                        )}
+                      </p>
+                    )}
+                    {tax.amountConfidence < 0.8 && (
+                      <span className="text-[10px] text-amber-400">
+                        Low confidence
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

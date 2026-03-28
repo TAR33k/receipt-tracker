@@ -2,6 +2,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using ReceiptTracker.Core.Enums;
 using ReceiptTracker.Core.Interfaces;
+using ReceiptTracker.Core.Models;
 
 namespace ReceiptTracker.Functions;
 
@@ -77,6 +78,18 @@ public class ReceiptProcessorFunction
         receipt.Currency = extractionResult.Currency;
         receipt.TransactionDate = extractionResult.TransactionDate;
         receipt.TransactionDateConfidence = extractionResult.TransactionDateConfidence;
+        receipt.TransactionTime = extractionResult.TransactionTime;
+        receipt.TransactionTimeConfidence = extractionResult.TransactionTimeConfidence;
+        receipt.TotalTax = extractionResult.TotalTax;
+        receipt.TotalTaxConfidence = extractionResult.TotalTaxConfidence;
+        receipt.TotalTaxCurrency = extractionResult.TotalTaxCurrency;
+        receipt.CountryRegion = extractionResult.CountryRegion;
+        receipt.CountryRegionConfidence = extractionResult.CountryRegionConfidence;
+        receipt.ReceiptType = extractionResult.ReceiptType;
+        receipt.ReceiptTypeConfidence = extractionResult.ReceiptTypeConfidence;
+        receipt.MerchantAddress = extractionResult.MerchantAddress;
+        receipt.Items = extractionResult.Items ?? new List<ReceiptItem>();
+        receipt.TaxDetails = extractionResult.TaxDetails ?? new List<TaxDetail>();
         receipt.Status = extractionResult.NeedsReview ? ReceiptStatus.NeedsReview : ReceiptStatus.Completed;
         receipt.ProcessedAt = DateTime.UtcNow;
 
