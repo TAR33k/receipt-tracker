@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
@@ -14,6 +14,9 @@ import {
   X,
   Wallet,
   Clock,
+  Globe,
+  ChevronDown,
+  RefreshCw,
 } from "lucide-react";
 import {
   BarChart,
@@ -27,13 +30,138 @@ import {
 } from "recharts";
 import { getReceipts, uploadReceipt } from "@/api/receipts";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  useExchangeRates,
+  useCurrencyPreference,
+} from "@/hooks/useExchangeRates";
 import { toast } from "sonner";
 import type { Receipt } from "@/types/receipt";
 import { cn, formatAmount, DEFAULT_CURRENCY } from "@/lib/utils";
 import ReceiptCard from "@/components/receipts/ReceiptCard";
 import Layout from "@/components/layout/Layout";
 
-function WelcomeHeader({ userName }: { userName: string }) {
+function CurrencySelector({
+  currencies,
+  selectedCurrency,
+  onSelect,
+  isLoading,
+  lastUpdated,
+  onRefresh,
+}: {
+  currencies: string[];
+  selectedCurrency: string;
+  onSelect: (currency: string) => void;
+  isLoading: boolean;
+  lastUpdated?: Date;
+  onRefresh: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (currencies.length <= 1) return null;
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+        >
+          <Globe className="w-4 h-4 text-[#5E6AD2]" />
+          <span className="text-white font-medium">{selectedCurrency}</span>
+          <ChevronDown
+            className={cn(
+              "w-4 h-4 text-[#8A8F98] transition-transform",
+              isOpen && "rotate-180",
+            )}
+          />
+        </button>
+        <button
+          onClick={onRefresh}
+          disabled={isLoading}
+          className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50"
+          title="Refresh exchange rates"
+        >
+          <RefreshCw
+            className={cn(
+              "w-4 h-4 text-[#8A8F98]",
+              isLoading && "animate-spin",
+            )}
+          />
+        </button>
+      </div>
+
+      {lastUpdated && (
+        <p className="text-xs text-[#8A8F98] mt-1">
+          Rates updated: {lastUpdated.toLocaleTimeString()}
+        </p>
+      )}
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full left-0 mt-2 w-48 bg-[#0a0a0b] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
+          >
+            {currencies.map((currency) => (
+              <button
+                key={currency}
+                onClick={() => {
+                  onSelect(currency);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "w-full px-4 py-3 text-left text-sm transition-colors flex items-center justify-between",
+                  currency === selectedCurrency
+                    ? "bg-[#5E6AD2]/20 text-[#5E6AD2]"
+                    : "text-white hover:bg-white/5",
+                )}
+              >
+                <span>{currency}</span>
+                {currency === selectedCurrency && (
+                  <div className="w-2 h-2 rounded-full bg-[#5E6AD2]" />
+                )}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function WelcomeHeader({
+  userName,
+  currencies,
+  selectedCurrency,
+  onSelectCurrency,
+  isLoadingRates,
+  ratesLastUpdated,
+  onRefreshRates,
+}: {
+  userName: string;
+  currencies: string[];
+  selectedCurrency: string;
+  onSelectCurrency: (currency: string) => void;
+  isLoadingRates: boolean;
+  ratesLastUpdated?: Date;
+  onRefreshRates: () => void;
+}) {
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -45,9 +173,19 @@ function WelcomeHeader({ userName }: { userName: string }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center gap-1 mb-2">
-        <span className="text-[#8A8F98] text-sm">{greeting},</span>
-        <span className="text-[#EDEDEF] text-sm font-medium">{userName}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+        <div className="flex items-center gap-1">
+          <span className="text-[#8A8F98] text-sm">{greeting},</span>
+          <span className="text-[#EDEDEF] text-sm font-medium">{userName}</span>
+        </div>
+        <CurrencySelector
+          currencies={currencies}
+          selectedCurrency={selectedCurrency}
+          onSelect={onSelectCurrency}
+          isLoading={isLoadingRates}
+          lastUpdated={ratesLastUpdated}
+          onRefresh={onRefreshRates}
+        />
       </div>
       <h1 className="text-3xl sm:text-4xl font-bold text-white">
         Your <span className="text-gradient-accent">Dashboard</span>
@@ -56,7 +194,15 @@ function WelcomeHeader({ userName }: { userName: string }) {
   );
 }
 
-function SpendingSummaryCard({ receipts }: { receipts: Receipt[] }) {
+function SpendingSummaryCard({
+  receipts,
+  convert,
+  targetCurrency,
+}: {
+  receipts: Receipt[];
+  convert: (amount: number, fromCurrency: string) => number;
+  targetCurrency: string;
+}) {
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
@@ -80,11 +226,13 @@ function SpendingSummaryCard({ receipts }: { receipts: Receipt[] }) {
   });
 
   const thisMonthTotal = thisMonthReceipts.reduce(
-    (sum, r) => sum + (r.totalAmount || 0),
+    (sum, r) =>
+      sum + convert(r.totalAmount || 0, r.currency || DEFAULT_CURRENCY),
     0,
   );
   const lastMonthTotal = lastMonthReceipts.reduce(
-    (sum, r) => sum + (r.totalAmount || 0),
+    (sum, r) =>
+      sum + convert(r.totalAmount || 0, r.currency || DEFAULT_CURRENCY),
     0,
   );
 
@@ -94,7 +242,7 @@ function SpendingSummaryCard({ receipts }: { receipts: Receipt[] }) {
       : 0;
   const isPositive = percentChange >= 0;
 
-  const currencyCode = receipts[0]?.currency || DEFAULT_CURRENCY;
+  const currencyCode = targetCurrency;
 
   return (
     <motion.div
@@ -151,7 +299,15 @@ function SpendingSummaryCard({ receipts }: { receipts: Receipt[] }) {
   );
 }
 
-function MerchantChart({ receipts }: { receipts: Receipt[] }) {
+function MerchantChart({
+  receipts,
+  convert,
+  targetCurrency,
+}: {
+  receipts: Receipt[];
+  convert: (amount: number, fromCurrency: string) => number;
+  targetCurrency: string;
+}) {
   const merchantData = useMemo(() => {
     const completed = receipts.filter(
       (r) => r.status === "Completed" && r.merchantName,
@@ -159,7 +315,11 @@ function MerchantChart({ receipts }: { receipts: Receipt[] }) {
     const grouped = completed.reduce(
       (acc, receipt) => {
         const name = receipt.merchantName || "Unknown";
-        acc[name] = (acc[name] || 0) + (receipt.totalAmount || 0);
+        const convertedAmount = convert(
+          receipt.totalAmount || 0,
+          receipt.currency || DEFAULT_CURRENCY,
+        );
+        acc[name] = (acc[name] || 0) + convertedAmount;
         return acc;
       },
       {} as Record<string, number>,
@@ -169,12 +329,11 @@ function MerchantChart({ receipts }: { receipts: Receipt[] }) {
       .map(([name, amount]) => ({ name, amount }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
-  }, [receipts]);
+  }, [receipts, convert]);
 
   const COLORS = ["#6366F1", "#5E6AD2", "#818CF8", "#A5B4FC", "#C7D2FE"];
 
-  const currencyCode =
-    receipts.find((r) => r.currency)?.currency || DEFAULT_CURRENCY;
+  const currencyCode = targetCurrency;
 
   if (merchantData.length === 0) {
     return (
@@ -483,6 +642,25 @@ export default function Dashboard() {
     },
   });
 
+  const availableCurrencies = useMemo(() => {
+    if (!receipts) return [];
+    const currencies = new Set<string>();
+    receipts.forEach((r) => {
+      if (r.currency) currencies.add(r.currency);
+    });
+    return Array.from(currencies).sort();
+  }, [receipts]);
+
+  const { preferredCurrency, setCurrency } =
+    useCurrencyPreference(availableCurrencies);
+
+  const {
+    rates,
+    isLoading: isLoadingRates,
+    convert,
+    refetch,
+  } = useExchangeRates(preferredCurrency || DEFAULT_CURRENCY);
+
   const uploadMutation = useMutation({
     mutationFn: uploadReceipt,
     onSuccess: (data) => {
@@ -510,14 +688,43 @@ export default function Dashboard() {
       (r) => r.status !== "Uploaded" && r.status !== "Processing",
     ) || [];
 
+  const safeConvert = useCallback(
+    (amount: number, fromCurrency: string): number => {
+      if (!rates || !preferredCurrency) return amount;
+      if (fromCurrency === preferredCurrency) return amount;
+      return convert(amount, fromCurrency);
+    },
+    [rates, preferredCurrency, convert],
+  );
+
   return (
     <Layout>
-      <WelcomeHeader userName={userDisplayName || "User"} />
+      <WelcomeHeader
+        userName={userDisplayName || "User"}
+        currencies={availableCurrencies}
+        selectedCurrency={preferredCurrency || DEFAULT_CURRENCY}
+        onSelectCurrency={setCurrency}
+        isLoadingRates={isLoadingRates}
+        ratesLastUpdated={rates ? new Date() : undefined}
+        onRefreshRates={refetch}
+      />
 
       <div className="grid grid-cols-1 gap-6 mb-8">
         <div className="space-y-6">
-          {receipts && <SpendingSummaryCard receipts={receipts} />}
-          {receipts && <MerchantChart receipts={receipts} />}
+          {receipts && preferredCurrency && (
+            <SpendingSummaryCard
+              receipts={receipts}
+              convert={safeConvert}
+              targetCurrency={preferredCurrency}
+            />
+          )}
+          {receipts && preferredCurrency && (
+            <MerchantChart
+              receipts={receipts}
+              convert={safeConvert}
+              targetCurrency={preferredCurrency}
+            />
+          )}
           <DesktopUploadArea onUpload={handleUpload} />
         </div>
       </div>
