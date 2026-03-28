@@ -36,7 +36,13 @@ import {
 } from "@/hooks/useExchangeRates";
 import { toast } from "sonner";
 import type { Receipt } from "@/types/receipt";
-import { cn, formatAmount, DEFAULT_CURRENCY } from "@/lib/utils";
+import {
+  cn,
+  formatAmount,
+  DEFAULT_CURRENCY,
+  normalizeMerchantName,
+  formatMerchantName,
+} from "@/lib/utils";
 import ReceiptCard from "@/components/receipts/ReceiptCard";
 import Layout from "@/components/layout/Layout";
 
@@ -312,21 +318,49 @@ function MerchantChart({
     const completed = receipts.filter(
       (r) => r.status === "Completed" && r.merchantName,
     );
-    const grouped = completed.reduce(
+
+    const groupedByNormalized = completed.reduce(
       (acc, receipt) => {
-        const name = receipt.merchantName || "Unknown";
+        const normalizedKey = normalizeMerchantName(receipt.merchantName);
+        if (!normalizedKey) return acc;
+
         const convertedAmount = convert(
           receipt.totalAmount || 0,
           receipt.currency || DEFAULT_CURRENCY,
         );
-        acc[name] = (acc[name] || 0) + convertedAmount;
+
+        if (!acc[normalizedKey]) {
+          acc[normalizedKey] = {
+            totalAmount: 0,
+            displayName: formatMerchantName(receipt.merchantName),
+            originalNames: new Set<string>(),
+          };
+        }
+
+        acc[normalizedKey].totalAmount += convertedAmount;
+        acc[normalizedKey].originalNames.add(receipt.merchantName || "");
+
+        const nameCounts = new Map<string, number>();
+        acc[normalizedKey].originalNames.forEach((name) => {
+          nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
+        });
+        const mostCommon = [...nameCounts.entries()].sort(
+          (a, b) => b[1] - a[1],
+        )[0]?.[0];
+        if (mostCommon) {
+          acc[normalizedKey].displayName = formatMerchantName(mostCommon);
+        }
+
         return acc;
       },
-      {} as Record<string, number>,
+      {} as Record<
+        string,
+        { totalAmount: number; displayName: string; originalNames: Set<string> }
+      >,
     );
 
-    return Object.entries(grouped)
-      .map(([name, amount]) => ({ name, amount }))
+    return Object.entries(groupedByNormalized)
+      .map(([, data]) => ({ name: data.displayName, amount: data.totalAmount }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
   }, [receipts, convert]);
