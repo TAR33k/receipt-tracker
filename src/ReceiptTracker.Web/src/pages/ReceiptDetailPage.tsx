@@ -177,7 +177,7 @@ function ExtractedFields({ receipt }: { receipt: Receipt }) {
             Basic Information
           </h3>
         </div>
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2">
           <div className="px-6">
             <FieldRow
               label="Merchant"
@@ -214,7 +214,7 @@ function ExtractedFields({ receipt }: { receipt: Receipt }) {
             />
           </div>
         )}
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2">
           <div className="px-6">
             <FieldRow
               label="Transaction Date"
@@ -269,7 +269,7 @@ function ExtractedFields({ receipt }: { receipt: Receipt }) {
               />
             </div>
           )}
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2">
             {receipt.merchantAddress.road && (
               <div className="px-6">
                 <FieldRow
@@ -289,7 +289,7 @@ function ExtractedFields({ receipt }: { receipt: Receipt }) {
               </div>
             )}
           </div>
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2">
             {receipt.merchantAddress.city && (
               <div className="px-6">
                 <FieldRow
