@@ -85,15 +85,86 @@ public class ReceiptsController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all receipts for the requesting user, newest first.
+    /// Returns paginated receipts for the requesting user with optional search, filtering, and sorting.
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ReceiptDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(typeof(PagedReceiptsResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] ReceiptListRequestDto request,
+        CancellationToken ct)
     {
         var userId = GetUserId();
-        var receipts = await _receiptRepository.GetAllByUserAsync(userId);
-        return Ok(receipts.Select(MapToDto));
+
+        if (request.Page < 1)
+            return BadRequest(new { error = "Page must be >= 1" });
+
+        if (request.PerPage < 1 || request.PerPage > 100)
+            return BadRequest(new { error = "PerPage must be between 1 and 100" });
+
+        if (!string.IsNullOrEmpty(request.SortBy))
+        {
+            var validSortColumns = new[] { "transactiondate", "createdat", "amount" };
+            if (!validSortColumns.Contains(request.SortBy.ToLower()))
+                return BadRequest(new { error = $"Invalid sortBy. Valid values: {string.Join(", ", validSortColumns)}" });
+        }
+
+        if (!string.IsNullOrEmpty(request.SortDirection))
+        {
+            var validDirections = new[] { "asc", "desc" };
+            if (!validDirections.Contains(request.SortDirection.ToLower()))
+                return BadRequest(new { error = $"Invalid sortDirection. Valid values: {string.Join(", ", validDirections)}" });
+        }
+
+        if (request.DateFrom.HasValue && request.DateTo.HasValue && request.DateFrom > request.DateTo)
+            return BadRequest(new { error = "DateFrom must be <= DateTo" });
+
+        if (request.AmountMin.HasValue && request.AmountMax.HasValue && request.AmountMin > request.AmountMax)
+            return BadRequest(new { error = "AmountMin must be <= AmountMax" });
+
+        var totalCount = await _receiptRepository.GetCountAsync(
+            userId,
+            request.Search,
+            request.Status?.ToString(),
+            request.DateFrom,
+            request.DateTo,
+            request.AmountMin,
+            request.AmountMax,
+            ct);
+
+        var items = await _receiptRepository.GetPagedAsync(
+            userId,
+            request.Search,
+            request.Status?.ToString(),
+            request.DateFrom,
+            request.DateTo,
+            request.AmountMin,
+            request.AmountMax,
+            request.SortBy,
+            request.SortDirection,
+            request.Page,
+            request.PerPage,
+            ct);
+
+        var totalPages = (int)Math.Ceiling(totalCount / (double)request.PerPage);
+
+        var response = new PagedReceiptsResponseDto(
+            Data: items.Select(MapToDto).ToList(),
+            Pagination: new PaginationMetadataDto(
+                TotalCount: totalCount,
+                Page: request.Page,
+                PerPage: request.PerPage,
+                TotalPages: totalPages,
+                HasNextPage: request.Page < totalPages,
+                HasPrevPage: request.Page > 1
+            )
+        );
+
+        _logger.LogInformation(
+            "User {UserId} queried receipts. Page {Page}/{TotalPages}, TotalCount {TotalCount}",
+            userId, request.Page, totalPages, totalCount);
+
+        return Ok(response);
     }
 
     /// <summary>

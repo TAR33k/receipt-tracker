@@ -28,7 +28,11 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { getReceipts, uploadReceipt } from "@/api/receipts";
+import {
+  getReceipts,
+  uploadReceipt,
+  type PagedReceiptsResponse,
+} from "@/api/receipts";
 import { useAuth } from "@/hooks/useAuth";
 import {
   useExchangeRates,
@@ -42,6 +46,7 @@ import {
   DEFAULT_CURRENCY,
   normalizeMerchantName,
   formatMerchantName,
+  formatDate,
 } from "@/lib/utils";
 import ReceiptCard from "@/components/receipts/ReceiptCard";
 import Layout from "@/components/layout/Layout";
@@ -112,7 +117,7 @@ function CurrencySelector({
 
       {lastUpdated && (
         <p className="text-xs text-[#8A8F98] mt-1">
-          Rates updated: {lastUpdated.toLocaleTimeString()}
+          Rates updated: {formatDate(lastUpdated.toISOString(), "full")}
         </p>
       )}
 
@@ -662,13 +667,16 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const [mobileUploadOpen, setMobileUploadOpen] = useState(false);
 
-  const { data: receipts, isLoading } = useQuery({
-    queryKey: ["receipts"],
-    queryFn: getReceipts,
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(10);
+
+  const { data: pagedData, isLoading } = useQuery<PagedReceiptsResponse>({
+    queryKey: ["receipts", page, perPage],
+    queryFn: () => getReceipts({ page, perPage }),
     refetchInterval: (query) => {
       const data = query.state.data;
-      if (!data) return false;
-      return data.some(
+      if (!data?.data) return false;
+      return data.data.some(
         (r) => r.status === "Uploaded" || r.status === "Processing",
       )
         ? 3000
@@ -676,8 +684,10 @@ export default function Dashboard() {
     },
   });
 
+  const receipts = useMemo(() => pagedData?.data ?? [], [pagedData]);
+  const pagination = pagedData?.pagination;
+
   const availableCurrencies = useMemo(() => {
-    if (!receipts) return [];
     const currencies = new Set<string>();
     receipts.forEach((r) => {
       if (r.currency) currencies.add(r.currency);
@@ -808,6 +818,31 @@ export default function Dashboard() {
             {recentReceipts.map((receipt) => (
               <ReceiptCard key={receipt.id} receipt={receipt} />
             ))}
+          </div>
+        )}
+
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={!pagination.hasPrevPage}
+              className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-[#8A8F98]">
+              Page {pagination.page} of {pagination.totalPages}
+              <span className="ml-2">({pagination.totalCount} total)</span>
+            </span>
+            <button
+              onClick={() =>
+                setPage((p) => Math.min(pagination.totalPages, p + 1))
+              }
+              disabled={!pagination.hasNextPage}
+              className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

@@ -34,7 +34,7 @@ public class ReceiptsControllerTests
     }
 
     [Fact]
-    public async Task GetAll_ReturnsOk_WithMappedDtos()
+    public async Task GetAll_ReturnsOk_WithPagedResponse()
     {
         var receipts = new List<Receipt>
         {
@@ -43,14 +43,20 @@ public class ReceiptsControllerTests
         };
 
         _mockRepository
-            .Setup(r => r.GetAllByUserAsync("test-user"))
+            .Setup(r => r.GetPagedAsync("test-user", null, null, null, null, null, null, null, null, 1, 20, default))
             .ReturnsAsync(receipts);
 
-        var result = await _controller.GetAll();
+        _mockRepository
+            .Setup(r => r.GetCountAsync("test-user", null, null, null, null, null, null, default))
+            .ReturnsAsync(2);
+
+        var result = await _controller.GetAll(new ReceiptListRequestDto(), default);
 
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-        var dtos = ok.Value.Should().BeAssignableTo<IEnumerable<ReceiptDto>>().Subject;
-        dtos.Should().HaveCount(2);
+        var response = ok.Value.Should().BeAssignableTo<PagedReceiptsResponseDto>().Subject;
+        response.Data.Should().HaveCount(2);
+        response.Pagination.TotalCount.Should().Be(2);
+        response.Pagination.Page.Should().Be(1);
     }
 
     [Fact]
