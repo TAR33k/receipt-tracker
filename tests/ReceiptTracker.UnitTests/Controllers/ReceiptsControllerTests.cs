@@ -91,6 +91,35 @@ public class ReceiptsControllerTests
     }
 
     [Fact]
+    public async Task GetAll_WithSearch_ReturnsFilteredResults()
+    {
+        var allReceipts = new List<Receipt>
+        {
+            new Receipt { Id = Guid.NewGuid(), UserId = "test-user", Status = ReceiptStatus.Completed, MerchantName = "Konzum", OriginalFileName = "r1.jpg", BlobName = "u/r1.jpg", CreatedAt = DateTime.UtcNow },
+            new Receipt { Id = Guid.NewGuid(), UserId = "test-user", Status = ReceiptStatus.Completed, MerchantName = "Bingo", OriginalFileName = "r2.jpg", BlobName = "u/r2.jpg", CreatedAt = DateTime.UtcNow },
+            new Receipt { Id = Guid.NewGuid(), UserId = "test-user", Status = ReceiptStatus.Completed, MerchantName = "Konzum d.d.", OriginalFileName = "r3.jpg", BlobName = "u/r3.jpg", CreatedAt = DateTime.UtcNow }
+        };
+
+        var filteredReceipts = allReceipts.Where(r => r.MerchantName!.ToLower().Contains("konzum")).ToList();
+
+        _mockRepository
+            .Setup(r => r.GetPagedAsync("test-user", "konzum", null, null, null, null, null, null, null, 1, 20, default))
+            .ReturnsAsync(filteredReceipts);
+
+        _mockRepository
+            .Setup(r => r.GetCountAsync("test-user", "konzum", null, null, null, null, null, default))
+            .ReturnsAsync(2);
+
+        var result = await _controller.GetAll(new ReceiptListRequestDto(Search: "konzum"), default);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        var response = ok.Value.Should().BeAssignableTo<PagedReceiptsResponseDto>().Subject;
+        response.Data.Should().HaveCount(2);
+        response.Data.Should().OnlyContain(r => r.MerchantName!.ToLower().Contains("konzum"));
+        response.Pagination.TotalCount.Should().Be(2);
+    }
+
+    [Fact]
     public async Task SubmitReview_NeedsReviewReceipt_UpdatesFieldsAndSetsCompleted()
     {
         var receipt = BuildReceipt("test-user", ReceiptStatus.NeedsReview);
