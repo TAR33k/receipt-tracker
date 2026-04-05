@@ -42,6 +42,7 @@ import {
   DEFAULT_CURRENCY,
   normalizeMerchantName,
   formatMerchantName,
+  formatDate,
 } from "@/lib/utils";
 import ReceiptCard from "@/components/receipts/ReceiptCard";
 import Layout from "@/components/layout/Layout";
@@ -112,7 +113,7 @@ function CurrencySelector({
 
       {lastUpdated && (
         <p className="text-xs text-[#8A8F98] mt-1">
-          Rates updated: {lastUpdated.toLocaleTimeString()}
+          Rates updated: {formatDate(lastUpdated.toISOString(), "full")}
         </p>
       )}
 

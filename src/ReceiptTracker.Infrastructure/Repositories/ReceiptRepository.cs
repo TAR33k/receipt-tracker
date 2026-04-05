@@ -41,4 +41,34 @@ public class ReceiptRepository : IReceiptRepository
         await _context.SaveChangesAsync();
         return receipt;
     }
+
+    public Task<IEnumerable<Receipt>> GetPagedAsync(
+        string userId,
+        string? search = null,
+        string? status = null,
+        DateTime? dateFrom = null,
+        DateTime? dateTo = null,
+        decimal? amountMin = null,
+        decimal? amountMax = null,
+        string? sortBy = null,
+        string? sortDirection = null,
+        int page = 1,
+        int perPage = 20,
+        CancellationToken ct = default)
+    {
+        throw new NotImplementedException("Pagination will be implemented in Phase 2");
+    }
+
+    public Task<int> GetCountAsync(
+        string userId,
+        string? search = null,
+        string? status = null,
+        DateTime? dateFrom = null,
+        DateTime? dateTo = null,
+        decimal? amountMin = null,
+        decimal? amountMax = null,
+        CancellationToken ct = default)
+    {
+        throw new NotImplementedException("Count will be implemented in Phase 2");
+    }
 }

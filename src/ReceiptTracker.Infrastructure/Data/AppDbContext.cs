@@ -86,6 +86,18 @@ public class AppDbContext : DbContext
 
             entity.HasIndex(r => new { r.UserId, r.CreatedAt })
                 .HasDatabaseName("IX_Receipts_UserId_CreatedAt");
+
+            entity.HasIndex(r => new { r.UserId, r.MerchantName })
+                .HasDatabaseName("IX_Receipts_UserId_MerchantName");
+
+            entity.HasIndex(r => new { r.UserId, r.TransactionDate })
+                .HasDatabaseName("IX_Receipts_UserId_TransactionDate");
+
+            entity.HasIndex(r => new { r.UserId, r.TotalAmount })
+                .HasDatabaseName("IX_Receipts_UserId_TotalAmount");
+
+            entity.HasIndex(r => new { r.UserId, r.Status })
+                .HasDatabaseName("IX_Receipts_UserId_Status");
         });
     }
 }
