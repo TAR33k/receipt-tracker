@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { dark } from "@clerk/themes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -9,7 +10,7 @@ export type DateFormatStyle = "short" | "medium" | "long" | "full" | "input";
 
 export function formatDate(
   dateString: string | null | undefined,
-  style: DateFormatStyle = "short",
+  style: DateFormatStyle = "short"
 ): string {
   if (!dateString) return "—";
   dateString = dateString.endsWith("Z") ? dateString : dateString + "Z";
@@ -60,9 +61,7 @@ export function formatDateTime(dateString: string): string {
   return formatDate(dateString, "full");
 }
 
-export function formatDateForInput(
-  dateString: string | null | undefined,
-): string {
+export function formatDateForInput(dateString: string | null | undefined): string {
   return formatDate(dateString, "input");
 }
 
@@ -88,7 +87,7 @@ export const DEFAULT_CURRENCY = "BAM";
 export function formatAmount(
   amount: number | null | undefined,
   currency?: string | null,
-  options?: Intl.NumberFormatOptions,
+  options?: Intl.NumberFormatOptions
 ): string {
   if (amount === null || amount === undefined) return "—";
 
@@ -109,7 +108,7 @@ export function formatAmount(
 
 export function formatAmountSimple(
   amount: number | null | undefined,
-  currency?: string | null,
+  currency?: string | null
 ): string {
   if (amount === null || amount === undefined) return "—";
 
@@ -194,15 +193,9 @@ export function formatMerchantName(name: string | null | undefined): string {
 }
 
 export function getMerchantGroupInfo(
-  receipts: Array<{ merchantName?: string | null }>,
-): Map<
-  string,
-  { displayName: string; count: number; originalNames: string[] }
-> {
-  const groups = new Map<
-    string,
-    { displayName: string; count: number; originalNames: string[] }
-  >();
+  receipts: Array<{ merchantName?: string | null }>
+): Map<string, { displayName: string; count: number; originalNames: string[] }> {
+  const groups = new Map<string, { displayName: string; count: number; originalNames: string[] }>();
 
   for (const receipt of receipts) {
     if (!receipt.merchantName) continue;
@@ -220,9 +213,7 @@ export function getMerchantGroupInfo(
         nameFrequency.set(name, (nameFrequency.get(name) || 0) + 1);
       }
 
-      const mostCommon = [...nameFrequency.entries()].sort(
-        (a, b) => b[1] - a[1],
-      )[0]?.[0];
+      const mostCommon = [...nameFrequency.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
 
       if (mostCommon) {
         existing.displayName = formatMerchantName(mostCommon);
@@ -238,3 +229,22 @@ export function getMerchantGroupInfo(
 
   return groups;
 }
+
+export const clerkAppearance = {
+  baseTheme: dark,
+  variables: {
+    colorPrimary: "#5E6AD2",
+    colorBackground: "#0a0a0c",
+    colorInputBackground: "rgba(255, 255, 255, 0.05)",
+    colorInputText: "#EDEDEF",
+    colorText: "#EDEDEF",
+    colorTextSecondary: "#8A8F98",
+    colorNeutral: "#8A8F98",
+    borderRadius: "0.75rem",
+    fontFamily: '"Inter", "Geist Sans", system-ui, sans-serif',
+  },
+  elements: {
+    card: "shadow-none bg-transparent",
+    rootBox: "w-full flex justify-center",
+  },
+} as const;

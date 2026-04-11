@@ -1,11 +1,5 @@
 import { cva } from "class-variance-authority";
-import {
-  Loader2,
-  CheckCircle,
-  AlertTriangle,
-  XCircle,
-  Clock,
-} from "lucide-react";
+import { Loader2, CheckCircle, AlertTriangle, XCircle, Clock } from "lucide-react";
 import type { ReceiptStatus } from "@/types/receipt";
 import { STATUS_LABELS } from "@/types/receipt";
 import { cn } from "@/lib/utils";
@@ -22,7 +16,7 @@ const badgeVariants = cva(
         Failed: "bg-red-500/10 text-red-400 border-red-500/20",
       },
     },
-  },
+  }
 );
 
 const statusIcons: Record<ReceiptStatus, React.ReactNode> = {

@@ -9,12 +9,8 @@ interface ExchangeRates {
 
 const CACHE_DURATION_MS = 60 * 60 * 1000;
 
-async function fetchExchangeRates(
-  baseCurrency: string,
-): Promise<ExchangeRates> {
-  const response = await fetch(
-    `https://api.exchangerate-api.com/v4/latest/${baseCurrency}`,
-  );
+async function fetchExchangeRates(baseCurrency: string): Promise<ExchangeRates> {
+  const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch exchange rates");
@@ -48,15 +44,13 @@ export function useExchangeRates(targetCurrency: string) {
       const toRate = data.rates[targetCurrency];
 
       if (!fromRate || !toRate) {
-        console.warn(
-          `Exchange rate not available for ${fromCurrency} or ${targetCurrency}`,
-        );
+        console.warn(`Exchange rate not available for ${fromCurrency} or ${targetCurrency}`);
         return amount;
       }
 
       return amount * (toRate / fromRate);
     },
-    [data, targetCurrency],
+    [data, targetCurrency]
   );
 
   return {
@@ -80,8 +74,8 @@ function getInitialCurrency(availableCurrencies: string[]): string | null {
 }
 
 export function useCurrencyPreference(availableCurrencies: string[]) {
-  const [preferredCurrency, setPreferredCurrency] = useState<string | null>(
-    () => getInitialCurrency(availableCurrencies),
+  const [preferredCurrency, setPreferredCurrency] = useState<string | null>(() =>
+    getInitialCurrency(availableCurrencies)
   );
 
   const setCurrency = useCallback((currency: string) => {

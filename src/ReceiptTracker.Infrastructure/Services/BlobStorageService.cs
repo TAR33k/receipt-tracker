@@ -8,7 +8,7 @@ public class BlobStorageService : IBlobStorageService
 {
     private readonly BlobServiceClient _blobServiceClient;
     private const string QuarantineContainer = "receipts-quarantine";
-    private const string ProcessedContainer  = "receipts-processed";
+    private const string ProcessedContainer = "receipts-processed";
 
     public BlobStorageService(BlobServiceClient blobServiceClient)
     {

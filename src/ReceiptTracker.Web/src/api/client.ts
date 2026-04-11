@@ -4,17 +4,14 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? "";
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
-    message: string,
+    message: string
   ) {
     super(message);
     this.name = "ApiError";
   }
 }
 
-export async function apiRequest<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
+export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = await resolveToken();
 
   const response = await fetch(`${BASE_URL}${path}`, {

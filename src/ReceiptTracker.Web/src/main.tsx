@@ -29,5 +29,5 @@ createRoot(document.getElementById("root")!).render(
         <App />
       </ClerkProviderWithRouting>
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 );

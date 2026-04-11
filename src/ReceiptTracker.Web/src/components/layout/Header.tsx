@@ -19,9 +19,7 @@ export default function Header({ isLandingPage }: { isLandingPage: boolean }) {
   return (
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "py-3 backdrop-blur-xl bg-[#050506]/80 border-b border-white/[0.06]"
-          : "py-6"
+        scrolled ? "py-3 backdrop-blur-xl bg-[#050506]/80 border-b border-white/[0.06]" : "py-6"
       }`}
       initial={{ y: isLandingPage ? -100 : 0 }}
       animate={{ y: 0 }}
@@ -35,9 +33,7 @@ export default function Header({ isLandingPage }: { isLandingPage: boolean }) {
           <div
             className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] flex items-center justify-center cursor-pointer hover:bg-[#5E6AD2]/80"
             onClick={() =>
-              !isLandingPage
-                ? navigate("/")
-                : window.scrollTo({ top: 0, behavior: "smooth" })
+              !isLandingPage ? navigate("/") : window.scrollTo({ top: 0, behavior: "smooth" })
             }
           >
             <img src="/logo.png" alt="Receipt Tracker" className="w-5 h-5" />
@@ -45,9 +41,7 @@ export default function Header({ isLandingPage }: { isLandingPage: boolean }) {
           <span
             className="text-xl font-semibold text-white cursor-pointer hover:text-[#5E6AD2]"
             onClick={() =>
-              !isLandingPage
-                ? navigate("/")
-                : window.scrollTo({ top: 0, behavior: "smooth" })
+              !isLandingPage ? navigate("/") : window.scrollTo({ top: 0, behavior: "smooth" })
             }
           >
             Receipt Tracker
@@ -86,10 +80,7 @@ export default function Header({ isLandingPage }: { isLandingPage: boolean }) {
             >
               Sign In
             </Button>
-            <Button
-              className="btn-primary"
-              onClick={() => navigate("/sign-up")}
-            >
+            <Button className="btn-primary" onClick={() => navigate("/sign-up")}>
               Get Started
             </Button>
           </div>

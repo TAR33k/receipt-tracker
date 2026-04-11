@@ -1,0 +1,64 @@
+{
+  "folders": [
+    {
+      "path": ".",
+    },
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "never",
+    },
+    "editor.rulers": [100],
+    "editor.tabSize": 2,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.eol": "\n",
+
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[css]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[xml]": {
+      "editor.tabSize": 2,
+    },
+
+    "eslint.workingDirectories": ["src/ReceiptTracker.Web"],
+    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+    "prettier.configPath": "src/ReceiptTracker.Web/.prettierrc.cjs",
+    "prettier.ignorePath": "src/ReceiptTracker.Web/.prettierignore",
+
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-dotnettools.csharp",
+      "EditorConfig.EditorConfig",
+      "bradlc.vscode-tailwindcss",
+    ],
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [],
+  },
+}

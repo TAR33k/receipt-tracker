@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +10,6 @@ using ReceiptTracker.Api.DTOs;
 using ReceiptTracker.Core.Entities;
 using ReceiptTracker.Core.Enums;
 using ReceiptTracker.Core.Interfaces;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ReceiptTracker.UnitTests.Controllers;
 

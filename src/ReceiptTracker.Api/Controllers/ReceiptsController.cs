@@ -1,12 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReceiptTracker.Api.DTOs;
 using ReceiptTracker.Core.Entities;
 using ReceiptTracker.Core.Enums;
 using ReceiptTracker.Core.Helpers;
 using ReceiptTracker.Core.Interfaces;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ReceiptTracker.Api.Controllers;
 

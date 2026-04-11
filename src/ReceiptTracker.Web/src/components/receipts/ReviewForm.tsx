@@ -21,8 +21,7 @@ function validateMerchantName(name: string): string | undefined {
   const trimmed = name.trim();
   if (!trimmed) return "Merchant name is required";
   if (trimmed.length < 2) return "Merchant name must be at least 2 characters";
-  if (trimmed.length > 100)
-    return "Merchant name must be less than 100 characters";
+  if (trimmed.length > 100) return "Merchant name must be less than 100 characters";
   return undefined;
 }
 
@@ -40,13 +39,8 @@ function validateTransactionDate(date: string): string | undefined {
   const parsed = new Date(date);
   if (isNaN(parsed.getTime())) return "Please enter a valid date";
   const now = new Date();
-  const oneYearFromNow = new Date(
-    now.getFullYear() + 1,
-    now.getMonth(),
-    now.getDate(),
-  );
-  if (parsed > oneYearFromNow)
-    return "Date cannot be more than 1 year in the future";
+  const oneYearFromNow = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+  if (parsed > oneYearFromNow) return "Date cannot be more than 1 year in the future";
   if (parsed.getFullYear() < 1900) return "Date must be after 1900";
   return undefined;
 }
@@ -54,8 +48,7 @@ function validateTransactionDate(date: string): string | undefined {
 function validateCurrency(currency: string): string | undefined {
   const trimmed = currency.trim();
   if (!trimmed) return "Currency is required";
-  if (!/^[A-Z]{3}$/i.test(trimmed))
-    return "Currency must be 3 letters (e.g., BAM, USD, EUR)";
+  if (!/^[A-Z]{3}$/i.test(trimmed)) return "Currency must be 3 letters (e.g., BAM, USD, EUR)";
   return undefined;
 }
 
@@ -68,10 +61,10 @@ export default function ReviewForm({ receipt }: Props) {
 
   const [merchantName, setMerchantName] = useState(receipt.merchantName ?? "");
   const [totalAmount, setTotalAmount] = useState(
-    receipt.totalAmount !== null ? String(receipt.totalAmount) : "",
+    receipt.totalAmount !== null ? String(receipt.totalAmount) : ""
   );
   const [transactionDate, setTransactionDate] = useState(
-    formatDateForInput(receipt.transactionDate),
+    formatDateForInput(receipt.transactionDate)
   );
   const [currency, setCurrency] = useState(receipt.currency ?? "");
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -188,12 +181,9 @@ export default function ReviewForm({ receipt }: Props) {
         <div className="space-y-2">
           <Label htmlFor="merchantName" className="text-[#EDEDEF]">
             Merchant name
-            {receipt.merchantNameConfidence !== null &&
-              receipt.merchantNameConfidence < 0.8 && (
-                <span className="ml-2 text-xs text-amber-400 font-normal">
-                  Low confidence
-                </span>
-              )}
+            {receipt.merchantNameConfidence !== null && receipt.merchantNameConfidence < 0.8 && (
+              <span className="ml-2 text-xs text-amber-400 font-normal">Low confidence</span>
+            )}
           </Label>
           <Input
             id="merchantName"
@@ -205,7 +195,7 @@ export default function ReviewForm({ receipt }: Props) {
               "h-11 text-white",
               errors.merchantName && touched.merchantName
                 ? "border-red-500/50 bg-red-500/5 focus:border-red-500"
-                : "border-white/10 bg-white/5",
+                : "border-white/10 bg-white/5"
             )}
           />
           <AnimatePresence>
@@ -226,12 +216,9 @@ export default function ReviewForm({ receipt }: Props) {
         <div className="space-y-2">
           <Label htmlFor="totalAmount" className="text-[#EDEDEF]">
             Total amount
-            {receipt.totalAmountConfidence !== null &&
-              receipt.totalAmountConfidence < 0.8 && (
-                <span className="ml-2 text-xs text-amber-400 font-normal">
-                  Low confidence
-                </span>
-              )}
+            {receipt.totalAmountConfidence !== null && receipt.totalAmountConfidence < 0.8 && (
+              <span className="ml-2 text-xs text-amber-400 font-normal">Low confidence</span>
+            )}
           </Label>
           <Input
             id="totalAmount"
@@ -246,7 +233,7 @@ export default function ReviewForm({ receipt }: Props) {
               "h-11 text-white",
               errors.totalAmount && touched.totalAmount
                 ? "border-red-500/50 bg-red-500/5 focus:border-red-500"
-                : "border-white/10 bg-white/5",
+                : "border-white/10 bg-white/5"
             )}
           />
           <AnimatePresence>
@@ -269,9 +256,7 @@ export default function ReviewForm({ receipt }: Props) {
             Transaction date
             {receipt.transactionDateConfidence !== null &&
               receipt.transactionDateConfidence < 0.8 && (
-                <span className="ml-2 text-xs text-amber-400 font-normal">
-                  Low confidence
-                </span>
+                <span className="ml-2 text-xs text-amber-400 font-normal">Low confidence</span>
               )}
           </Label>
           <Input
@@ -284,7 +269,7 @@ export default function ReviewForm({ receipt }: Props) {
               "h-11 text-white w-full block [&::-webkit-calendar-picker-indicator]:ml-auto [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:brightness-0 [&::-webkit-calendar-picker-indicator]:invert",
               errors.transactionDate && touched.transactionDate
                 ? "border-red-500/50 bg-red-500/5 focus:border-red-500"
-                : "border-white/10 bg-white/5",
+                : "border-white/10 bg-white/5"
             )}
           />
           <AnimatePresence>
@@ -317,7 +302,7 @@ export default function ReviewForm({ receipt }: Props) {
               "h-11 text-white",
               errors.currency && touched.currency
                 ? "border-red-500/50 bg-red-500/5 focus:border-red-500"
-                : "border-white/10 bg-white/5",
+                : "border-white/10 bg-white/5"
             )}
           />
           <AnimatePresence>
