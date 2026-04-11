@@ -1,14 +1,13 @@
 import { SignIn } from "@clerk/clerk-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { clerkAppearance } from "@/lib/utils";
 
 export default function SignInPage() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden">
-      <div className="ambient-blob blob-1" />
-      <div className="ambient-blob blob-2" />
-      <div className="ambient-blob blob-3" />
+      <AnimatedBackground />
 
       <Header isLandingPage={false} />
 
