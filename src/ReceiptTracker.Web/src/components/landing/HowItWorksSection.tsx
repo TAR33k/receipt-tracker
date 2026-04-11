@@ -52,12 +52,8 @@ export function HowItWorksSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <div className="text-6xl font-bold text-[#5E6AD2]/20 mb-4">
-                {item.step}
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                {item.title}
-              </h3>
+              <div className="text-6xl font-bold text-[#5E6AD2]/20 mb-4">{item.step}</div>
+              <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
               <p className="text-[#8A8F98]">{item.desc}</p>
             </motion.div>
           ))}

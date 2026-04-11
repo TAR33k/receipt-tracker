@@ -16,19 +16,14 @@ export function ReceiptDetailHeader({ receipt }: ReceiptDetailHeaderProps) {
         <h1
           className={cn(
             "text-2xl sm:text-3xl font-semibold tracking-tight",
-            receipt.merchantName
-              ? "text-[#EDEDEF]"
-              : "text-[#8A8F98] italic",
+            receipt.merchantName ? "text-[#EDEDEF]" : "text-[#8A8F98] italic"
           )}
         >
           {receipt.merchantName ?? "Receipt"}
         </h1>
         <ReceiptMetaRow receipt={receipt} />
       </div>
-      <ReceiptStatusBadge
-        status={receipt.status}
-        className="mt-1 flex-shrink-0"
-      />
+      <ReceiptStatusBadge status={receipt.status} className="mt-1 flex-shrink-0" />
     </div>
   );
 }

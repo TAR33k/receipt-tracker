@@ -36,8 +36,7 @@ const features = [
   {
     icon: Clock,
     title: "Event-Driven Architecture",
-    description:
-      "Real-time processing and notifications the moment your receipt is ready.",
+    description: "Real-time processing and notifications the moment your receipt is ready.",
   },
 ];
 
@@ -54,10 +53,7 @@ export function FeaturesSection() {
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
             Everything you need to
-            <span className="text-gradient-accent block sm:inline">
-              {" "}
-              track expenses
-            </span>
+            <span className="text-gradient-accent block sm:inline"> track expenses</span>
           </h2>
           <p className="text-lg text-[#8A8F98] max-w-2xl mx-auto">
             A complete receipt management solution powered by cutting-edge AI

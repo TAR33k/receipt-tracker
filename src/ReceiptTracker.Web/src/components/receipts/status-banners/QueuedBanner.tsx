@@ -7,9 +7,7 @@ export function QueuedBanner() {
         <Clock className="w-7 h-7 text-[#818CF8]" />
       </div>
       <div>
-        <p className="font-medium text-lg text-[#EDEDEF]">
-          Waiting to be processed
-        </p>
+        <p className="font-medium text-lg text-[#EDEDEF]">Waiting to be processed</p>
         <p className="text-sm text-[#8A8F98] mt-1">
           Your receipt is queued. Processing will start shortly.
         </p>

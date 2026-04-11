@@ -13,8 +13,7 @@ export function FailedBanner({ message }: FailedBannerProps) {
       <div>
         <p className="font-medium text-base text-red-400">Processing failed</p>
         <p className="text-sm text-[#8A8F98] mt-1">
-          {message ??
-            "An unknown error occurred. The file may not contain a readable receipt."}
+          {message ?? "An unknown error occurred. The file may not contain a readable receipt."}
         </p>
       </div>
     </div>

@@ -39,8 +39,8 @@ public static class FileValidator
 
     public static string GetExtension(string contentType) => contentType.ToLowerInvariant() switch
     {
-        "image/jpeg"      => ".jpg",
-        "image/png"       => ".png",
+        "image/jpeg" => ".jpg",
+        "image/png" => ".png",
         "application/pdf" => ".pdf",
         _ => throw new ArgumentException($"Unsupported content type: {contentType}")
     };

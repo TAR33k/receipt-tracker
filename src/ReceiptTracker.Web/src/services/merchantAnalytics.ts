@@ -1,9 +1,5 @@
 import type { Receipt } from "@/types/receipt";
-import {
-  DEFAULT_CURRENCY,
-  normalizeMerchantName,
-  formatMerchantName,
-} from "@/lib/utils";
+import { DEFAULT_CURRENCY, normalizeMerchantName, formatMerchantName } from "@/lib/utils";
 
 export interface MerchantSpending {
   name: string;
@@ -22,11 +18,9 @@ interface MerchantAggregate {
  */
 export function aggregateSpendingByMerchant(
   receipts: Receipt[],
-  convert: (amount: number, fromCurrency: string) => number,
+  convert: (amount: number, fromCurrency: string) => number
 ): MerchantSpending[] {
-  const completed = receipts.filter(
-    (r) => r.status === "Completed" && r.merchantName,
-  );
+  const completed = receipts.filter((r) => r.status === "Completed" && r.merchantName);
 
   const grouped = new Map<string, MerchantAggregate>();
 
@@ -34,10 +28,7 @@ export function aggregateSpendingByMerchant(
     const normalizedKey = normalizeMerchantName(receipt.merchantName);
     if (!normalizedKey) continue;
 
-    const convertedAmount = convert(
-      receipt.totalAmount || 0,
-      receipt.currency || DEFAULT_CURRENCY,
-    );
+    const convertedAmount = convert(receipt.totalAmount || 0, receipt.currency || DEFAULT_CURRENCY);
 
     const existing = grouped.get(normalizedKey);
     if (existing) {
@@ -58,9 +49,7 @@ export function aggregateSpendingByMerchant(
     for (const name of aggregate.originalNames) {
       nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
     }
-    const mostCommon = [...nameCounts.entries()].sort(
-      (a, b) => b[1] - a[1],
-    )[0]?.[0];
+    const mostCommon = [...nameCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
     if (mostCommon) {
       aggregate.displayName = formatMerchantName(mostCommon);
     }

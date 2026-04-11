@@ -1,11 +1,5 @@
 import { motion } from "framer-motion";
-import {
-  Wallet,
-  Receipt,
-  Calendar,
-  TrendingUp,
-  TrendingDown,
-} from "lucide-react";
+import { Wallet, Receipt, Calendar, TrendingUp, TrendingDown } from "lucide-react";
 import { cn, formatAmount } from "@/lib/utils";
 import { calculateMonthlySpending } from "@/services/spendingAnalytics";
 import type { Receipt as ReceiptType } from "@/types/receipt";
@@ -16,11 +10,7 @@ interface SpendingSummaryProps {
   targetCurrency: string;
 }
 
-export function SpendingSummary({
-  receipts,
-  convert,
-  targetCurrency,
-}: SpendingSummaryProps) {
+export function SpendingSummary({ receipts, convert, targetCurrency }: SpendingSummaryProps) {
   const summary = calculateMonthlySpending(receipts, convert);
 
   return (
@@ -48,7 +38,7 @@ export function SpendingSummary({
             "flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium",
             summary.isPositiveChange
               ? "bg-red-500/10 text-red-400"
-              : "bg-emerald-500/10 text-emerald-400",
+              : "bg-emerald-500/10 text-emerald-400"
           )}
         >
           {summary.isPositiveChange ? (

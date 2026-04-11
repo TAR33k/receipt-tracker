@@ -34,18 +34,12 @@ export function TechnologySection() {
                   Built on Azure with enterprise-grade reliability
                 </h2>
                 <p className="text-lg text-[#8A8F98] mb-8">
-                  Event-driven architecture built with .NET, React, Azure
-                  Functions, Azure SQL Database, Azure Storage, and Azure
-                  Document Intelligence.
+                  Event-driven architecture built with .NET, React, Azure Functions, Azure SQL
+                  Database, Azure Storage, and Azure Document Intelligence.
                 </p>
                 <Button
                   className="btn-primary"
-                  onClick={() =>
-                    window.open(
-                      "https://github.com/TAR33k/receipt-tracker",
-                      "_blank",
-                    )
-                  }
+                  onClick={() => window.open("https://github.com/TAR33k/receipt-tracker", "_blank")}
                 >
                   View on GitHub
                   <ArrowRight className="w-4 h-4 ml-2" />

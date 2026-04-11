@@ -1,15 +1,6 @@
-export type ReceiptStatus =
-  | "Uploaded"
-  | "Processing"
-  | "Completed"
-  | "NeedsReview"
-  | "Failed";
+export type ReceiptStatus = "Uploaded" | "Processing" | "Completed" | "NeedsReview" | "Failed";
 
-export const TERMINAL_STATUSES: ReceiptStatus[] = [
-  "Completed",
-  "NeedsReview",
-  "Failed",
-];
+export const TERMINAL_STATUSES: ReceiptStatus[] = ["Completed", "NeedsReview", "Failed"];
 
 export const STATUS_LABELS: Record<ReceiptStatus, string> = {
   Uploaded: "Queued",

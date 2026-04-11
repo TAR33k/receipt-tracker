@@ -30,8 +30,8 @@ export function HeroSection() {
             <span className="text-gradient-accent">expenses</span>
           </h1>
           <p className="text-lg sm:text-xl text-[#8A8F98] max-w-2xl mx-auto leading-relaxed">
-            AI-powered receipt scanning that extracts data automatically. Track
-            expenses, visualize spending, and stay organized.
+            AI-powered receipt scanning that extracts data automatically. Track expenses, visualize
+            spending, and stay organized.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Button
@@ -69,9 +69,7 @@ export function HeroSection() {
             </div>
             <div className="w-px h-12 bg-white/10" />
             <div className="text-center">
-              <div className="text-xl sm:text-4xl font-bold text-white">
-                95%
-              </div>
+              <div className="text-xl sm:text-4xl font-bold text-white">95%</div>
               <div className="text-sm text-[#8A8F98]">Accuracy rate</div>
             </div>
             <div className="w-px h-12 bg-white/10" />

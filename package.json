@@ -1,0 +1,31 @@
+{
+  "name": "receipt-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered receipt tracking application",
+  "scripts": {
+    "prepare": "husky",
+    "lint:web": "cd src/ReceiptTracker.Web && npm run lint",
+    "lint:web:fix": "cd src/ReceiptTracker.Web && npm run lint:fix",
+    "format:web": "cd src/ReceiptTracker.Web && npm run format",
+    "format:web:check": "cd src/ReceiptTracker.Web && npm run format:check",
+    "format:backend": "dotnet format",
+    "format:backend:check": "dotnet format --verify-no-changes",
+    "format:all": "npm run format:web && npm run format:backend",
+    "lint:all": "npm run lint:web && npm run format:backend:check",
+    "test": "echo \"Run tests from individual project directories\""
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0",
+    "prettier": "^3.8.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "src/ReceiptTracker.Web/node_modules/.bin/eslint.cmd --config src/ReceiptTracker.Web/eslint.config.js --fix",
+      "src/ReceiptTracker.Web/node_modules/.bin/prettier.cmd --config src/ReceiptTracker.Web/.prettierrc.cjs --write"
+    ],
+    "*.cs": "dotnet format --include",
+    "*.{json,md,yml,yaml,css,scss}": "npx prettier --write"
+  }
+}

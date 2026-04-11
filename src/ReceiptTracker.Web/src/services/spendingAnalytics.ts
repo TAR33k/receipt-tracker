@@ -16,7 +16,7 @@ export interface MonthlySpendingSummary {
  */
 export function calculateMonthlySpending(
   receipts: Receipt[],
-  convert: (amount: number, fromCurrency: string) => number,
+  convert: (amount: number, fromCurrency: string) => number
 ): MonthlySpendingSummary {
   const now = new Date();
   const currentMonth = now.getMonth();
@@ -35,30 +35,19 @@ export function calculateMonthlySpending(
     }
 
     const date = new Date(receipt.transactionDate);
-    const amount = convert(
-      receipt.totalAmount || 0,
-      receipt.currency || DEFAULT_CURRENCY,
-    );
+    const amount = convert(receipt.totalAmount || 0, receipt.currency || DEFAULT_CURRENCY);
 
-    if (
-      date.getMonth() === currentMonth &&
-      date.getFullYear() === currentYear
-    ) {
+    if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
       thisMonthTotal += amount;
       thisMonthReceiptCount++;
-    } else if (
-      date.getMonth() === lastMonth &&
-      date.getFullYear() === lastMonthYear
-    ) {
+    } else if (date.getMonth() === lastMonth && date.getFullYear() === lastMonthYear) {
       lastMonthTotal += amount;
       lastMonthReceiptCount++;
     }
   }
 
   const percentChange =
-    lastMonthTotal > 0
-      ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100
-      : 0;
+    lastMonthTotal > 0 ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100 : 0;
 
   return {
     thisMonthTotal,

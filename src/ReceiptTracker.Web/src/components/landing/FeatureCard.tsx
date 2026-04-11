@@ -7,12 +7,7 @@ interface FeatureCardProps {
   delay: number;
 }
 
-export function FeatureCard({
-  icon: Icon,
-  title,
-  description,
-  delay,
-}: FeatureCardProps) {
+export function FeatureCard({ icon: Icon, title, description, delay }: FeatureCardProps) {
   return (
     <motion.div
       className="glass p-8 rounded-2xl group hover:border-[#5E6AD2]/30 transition-all duration-300"

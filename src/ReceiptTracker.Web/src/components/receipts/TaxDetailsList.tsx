@@ -33,27 +33,18 @@ export function TaxDetailsList({ taxDetails, currency }: TaxDetailsListProps) {
                 )}
                 {tax.netAmount !== null && (
                   <p className="text-xs text-[#8A8F98]">
-                    Net:{" "}
-                    {formatAmountSimple(
-                      tax.netAmount,
-                      tax.netAmountCurrency ?? currency,
-                    )}
+                    Net: {formatAmountSimple(tax.netAmount, tax.netAmountCurrency ?? currency)}
                   </p>
                 )}
               </div>
               <div className="text-right">
                 {tax.amount !== null && (
                   <p className="text-sm font-medium text-[#EDEDEF]">
-                    {formatAmountSimple(
-                      tax.amount,
-                      tax.amountCurrency ?? currency,
-                    )}
+                    {formatAmountSimple(tax.amount, tax.amountCurrency ?? currency)}
                   </p>
                 )}
                 {tax.amountConfidence < 0.8 && (
-                  <span className="text-[10px] text-amber-400">
-                    Low confidence
-                  </span>
+                  <span className="text-[10px] text-amber-400">Low confidence</span>
                 )}
               </div>
             </div>

@@ -51,7 +51,7 @@ export function ExtractedFields({ receipt }: ExtractedFieldsProps) {
               label="Total Tax"
               value={formatAmountSimple(
                 receipt.totalTax,
-                receipt.totalTaxCurrency ?? receipt.currency,
+                receipt.totalTaxCurrency ?? receipt.currency
               )}
               confidence={receipt.totalTaxConfidence}
             />

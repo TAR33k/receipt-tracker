@@ -23,14 +23,10 @@ interface MerchantAnalyticsProps {
 
 const COLORS = ["#6366F1", "#5E6AD2", "#818CF8", "#A5B4FC", "#C7D2FE"];
 
-export function MerchantAnalytics({
-  receipts,
-  convert,
-  targetCurrency,
-}: MerchantAnalyticsProps) {
+export function MerchantAnalytics({ receipts, convert, targetCurrency }: MerchantAnalyticsProps) {
   const merchantData = useMemo(
     () => aggregateSpendingByMerchant(receipts, convert),
-    [receipts, convert],
+    [receipts, convert]
   );
 
   if (merchantData.length === 0) {
@@ -39,9 +35,7 @@ export function MerchantAnalytics({
         <div className="text-center">
           <BarChart className="w-12 h-12 text-[#8A8F98] mx-auto mb-3" />
           <p className="text-[#8A8F98]">No data yet</p>
-          <p className="text-sm text-[#8A8F98]/70">
-            Upload receipts to see analytics
-          </p>
+          <p className="text-sm text-[#8A8F98]/70">Upload receipts to see analytics</p>
         </div>
       </div>
     );
@@ -54,9 +48,7 @@ export function MerchantAnalytics({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <h3 className="text-lg font-semibold text-white mb-6">
-        Spending by Merchant
-      </h3>
+      <h3 className="text-lg font-semibold text-white mb-6">Spending by Merchant</h3>
       <div className="h-[250px]">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsBarChart data={merchantData} layout="vertical">
@@ -82,9 +74,7 @@ export function MerchantAnalytics({
               stroke="#8A8F98"
               fontSize={12}
               width={120}
-              tickFormatter={(value) =>
-                value.length > 30 ? value.slice(0, 30) + "..." : value
-              }
+              tickFormatter={(value) => (value.length > 30 ? value.slice(0, 30) + "..." : value)}
             />
             <RechartsTooltip
               contentStyle={{
@@ -94,7 +84,7 @@ export function MerchantAnalytics({
                 color: "#EDEDEF",
               }}
               formatter={(value) => [
-                <span style={{ color: "#EDEDEF" }}>
+                <span style={{ color: "#EDEDEF" }} key={`tooltip-${value}`}>
                   {formatAmount(Number(value), targetCurrency)}
                 </span>,
               ]}
@@ -106,10 +96,7 @@ export function MerchantAnalytics({
             />
             <Bar dataKey="amount" radius={[0, 4, 4, 0]}>
               {merchantData.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Bar>
           </RechartsBarChart>

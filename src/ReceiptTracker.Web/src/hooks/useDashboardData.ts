@@ -62,8 +62,7 @@ export function useDashboardData(): DashboardData {
 
   const { upload: uploadReceipt, isUploading } = useReceiptUpload();
 
-  const { preferredCurrency, setCurrency } =
-    useCurrencyPreference(availableCurrencies);
+  const { preferredCurrency, setCurrency } = useCurrencyPreference(availableCurrencies);
 
   const {
     rates,
@@ -79,13 +78,10 @@ export function useDashboardData(): DashboardData {
       if (fromCurrency === preferredCurrency) return amount;
       return rawConvert(amount, fromCurrency);
     },
-    [rates, preferredCurrency, rawConvert],
+    [rates, preferredCurrency, rawConvert]
   );
 
-  const ratesLastUpdated = useMemo(
-    () => (rates ? new Date() : undefined),
-    [rates],
-  );
+  const ratesLastUpdated = useMemo(() => (rates ? new Date() : undefined), [rates]);
 
   return {
     receipts,

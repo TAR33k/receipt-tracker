@@ -7,12 +7,9 @@ export function ProcessingBanner() {
         <Loader2 className="w-7 h-7 text-[#5E6AD2] animate-spin" />
       </div>
       <div>
-        <p className="font-medium text-lg text-[#EDEDEF]">
-          AI extraction in progress
-        </p>
+        <p className="font-medium text-lg text-[#EDEDEF]">AI extraction in progress</p>
         <p className="text-sm text-[#8A8F98] mt-1 max-w-sm">
-          Document Intelligence is reading your receipt. This usually takes 5–15
-          seconds.
+          Document Intelligence is reading your receipt. This usually takes 5–15 seconds.
         </p>
       </div>
     </div>

@@ -9,8 +9,8 @@ export function NeedsReviewBanner() {
       <div>
         <p className="font-medium text-base text-amber-400">Review required</p>
         <p className="text-sm text-[#8A8F98] mt-0.5">
-          One or more fields were extracted with low confidence. Please verify
-          and correct them below.
+          One or more fields were extracted with low confidence. Please verify and correct them
+          below.
         </p>
       </div>
     </div>

@@ -7,9 +7,7 @@ interface ProcessingReceiptsListProps {
   receipts: Receipt[];
 }
 
-export function ProcessingReceiptsList({
-  receipts,
-}: ProcessingReceiptsListProps) {
+export function ProcessingReceiptsList({ receipts }: ProcessingReceiptsListProps) {
   if (receipts.length === 0) return null;
 
   return (

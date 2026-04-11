@@ -34,7 +34,7 @@ export function useReceiptUpload(): UseReceiptUploadResult {
     (file: File) => {
       mutation.mutate(file);
     },
-    [mutation],
+    [mutation]
   );
 
   return {

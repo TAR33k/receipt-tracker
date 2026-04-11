@@ -9,8 +9,7 @@ interface FieldRowProps {
 function ConfidenceBar({ value }: { value: number | null }) {
   if (value === null) return null;
   const pct = Math.round(value * 100);
-  const color =
-    pct >= 90 ? "bg-emerald-500" : pct >= 80 ? "bg-teal-500" : "bg-amber-500";
+  const color = pct >= 90 ? "bg-emerald-500" : pct >= 80 ? "bg-teal-500" : "bg-amber-500";
 
   return (
     <div className="flex items-center gap-2 mt-0.5">
@@ -23,11 +22,7 @@ function ConfidenceBar({ value }: { value: number | null }) {
       <span
         className={cn(
           "text-xs tabular-nums font-medium",
-          pct >= 90
-            ? "text-emerald-400"
-            : pct >= 80
-              ? "text-teal-400"
-              : "text-amber-400",
+          pct >= 90 ? "text-emerald-400" : pct >= 80 ? "text-teal-400" : "text-amber-400"
         )}
       >
         {pct}%
@@ -39,14 +34,9 @@ function ConfidenceBar({ value }: { value: number | null }) {
 export function FieldRow({ label, value, confidence }: FieldRowProps) {
   return (
     <div className="py-4">
-      <p className="text-xs text-[#8A8F98] uppercase tracking-wider mb-1">
-        {label}
-      </p>
+      <p className="text-xs text-[#8A8F98] uppercase tracking-wider mb-1">{label}</p>
       <p
-        className={cn(
-          "text-base font-medium",
-          value ? "text-[#EDEDEF]" : "text-[#8A8F98] italic",
-        )}
+        className={cn("text-base font-medium", value ? "text-[#EDEDEF]" : "text-[#8A8F98] italic")}
       >
         {value ?? "Not detected"}
       </p>

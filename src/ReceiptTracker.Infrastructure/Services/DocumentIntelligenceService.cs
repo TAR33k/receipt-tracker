@@ -302,7 +302,7 @@ public class DocumentIntelligenceService : IDocumentIntelligenceService
         if (addressField.FieldType == DocumentFieldType.Address && addressField.ValueAddress != null)
         {
             var addr = addressField.ValueAddress;
-            
+
             if (!string.IsNullOrEmpty(addr.HouseNumber))
             {
                 address.HouseNumber = addr.HouseNumber;
@@ -344,16 +344,16 @@ public class DocumentIntelligenceService : IDocumentIntelligenceService
                 addressParts.Add(addr.StreetAddress);
             else if (!string.IsNullOrEmpty(addr.HouseNumber) || !string.IsNullOrEmpty(addr.Road))
                 addressParts.Add($"{addr.Road} {addr.HouseNumber}".Trim());
-            
+
             if (!string.IsNullOrEmpty(addr.City))
                 addressParts.Add(addr.City);
-            
+
             if (!string.IsNullOrEmpty(addr.State))
                 addressParts.Add(addr.State);
-            
+
             if (!string.IsNullOrEmpty(addr.PostalCode))
                 addressParts.Add(addr.PostalCode);
-            
+
             if (!string.IsNullOrEmpty(addr.CountryRegion))
                 addressParts.Add(addr.CountryRegion);
 

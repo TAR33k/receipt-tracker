@@ -21,8 +21,7 @@ export function DashboardHeader({
   onRefreshRates,
 }: DashboardHeaderProps) {
   const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <motion.div

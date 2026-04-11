@@ -44,15 +44,12 @@ export function useReceiptsList(): UseReceiptsListResult {
 
   const { data: pagedData, isLoading } = useQuery<PagedReceiptsResponse>({
     queryKey: ["receipts", page, PER_PAGE, debounced],
-    queryFn: () =>
-      getReceipts({ page, perPage: PER_PAGE, search: debounced || undefined }),
+    queryFn: () => getReceipts({ page, perPage: PER_PAGE, search: debounced || undefined }),
     placeholderData: (previousData) => previousData,
     refetchInterval: (query) => {
       const data = query.state.data;
       if (!data?.data) return false;
-      return data.data.some(
-        (r) => r.status === "Uploaded" || r.status === "Processing",
-      )
+      return data.data.some((r) => r.status === "Uploaded" || r.status === "Processing")
         ? 3000
         : false;
     },
@@ -61,19 +58,13 @@ export function useReceiptsList(): UseReceiptsListResult {
   const receipts = useMemo(() => pagedData?.data ?? [], [pagedData]);
 
   const activeReceipts = useMemo(
-    () =>
-      receipts.filter(
-        (r) => r.status === "Uploaded" || r.status === "Processing",
-      ),
-    [receipts],
+    () => receipts.filter((r) => r.status === "Uploaded" || r.status === "Processing"),
+    [receipts]
   );
 
   const recentReceipts = useMemo(
-    () =>
-      receipts.filter(
-        (r) => r.status !== "Uploaded" && r.status !== "Processing",
-      ),
-    [receipts],
+    () => receipts.filter((r) => r.status !== "Uploaded" && r.status !== "Processing"),
+    [receipts]
   );
 
   const availableCurrencies = useMemo(() => {

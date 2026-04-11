@@ -7,10 +7,7 @@ import Layout from "@/components/layout/Layout";
 import ReviewForm from "@/components/receipts/ReviewForm";
 import { useReceiptDetail } from "@/hooks/useReceiptDetail";
 import { ExtractedFields } from "@/components/receipt-detail/ExtractedFields";
-import {
-  ReceiptDetailHeader,
-  BackLink,
-} from "@/components/receipt-detail/ReceiptDetailHeader";
+import { ReceiptDetailHeader, BackLink } from "@/components/receipt-detail/ReceiptDetailHeader";
 import {
   ProcessingBanner,
   QueuedBanner,
@@ -111,12 +108,7 @@ export default function ReceiptDetailPage() {
                 : error.message
               : "Receipt not found"}
           </p>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mt-4 btn-secondary"
-            asChild
-          >
+          <Button variant="ghost" size="sm" className="mt-4 btn-secondary" asChild>
             <Link to="/">Go back</Link>
           </Button>
         </motion.div>
@@ -139,8 +131,7 @@ export default function ReceiptDetailPage() {
 
           {renderStatusBanner()}
 
-          {(receipt.status === "Completed" ||
-            receipt.status === "NeedsReview") && (
+          {(receipt.status === "Completed" || receipt.status === "NeedsReview") && (
             <motion.div
               className="space-y-6"
               initial={{ opacity: 0, y: 20 }}
@@ -158,12 +149,9 @@ export default function ReceiptDetailPage() {
                   <div className="section-divider" />
                   <section className="space-y-4">
                     <div>
-                      <h2 className="text-lg font-medium text-[#EDEDEF]">
-                        Correct extracted data
-                      </h2>
+                      <h2 className="text-lg font-medium text-[#EDEDEF]">Correct extracted data</h2>
                       <p className="text-sm text-[#8A8F98] mt-1">
-                        Only fill in fields you want to change. Leave others
-                        as-is.
+                        Only fill in fields you want to change. Leave others as-is.
                       </p>
                     </div>
                     <ReviewForm receipt={receipt} />

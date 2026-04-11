@@ -1,0 +1,16 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.rulers": [100],
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+
+  "eslint.workingDirectories": ["src/ReceiptTracker.Web"],
+  "prettier.configPath": "src/ReceiptTracker.Web/.prettierrc.cjs",
+  "prettier.ignorePath": "src/ReceiptTracker.Web/.prettierignore"
+}

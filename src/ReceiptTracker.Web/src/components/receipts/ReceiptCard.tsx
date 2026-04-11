@@ -1,23 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import {
-  ArrowUpRight,
-  ChevronRight,
-  Receipt as ReceiptIcon,
-  Sparkles,
-} from "lucide-react";
+import { ArrowUpRight, ChevronRight, Receipt as ReceiptIcon, Sparkles } from "lucide-react";
 import ReceiptStatusBadge from "./ReceiptStatusBadge";
 import type { Receipt } from "@/types/receipt";
 import { motion } from "framer-motion";
-import {
-  formatAmountSimple,
-  formatDate,
-  formatMerchantName,
-} from "@/lib/utils";
+import { formatAmountSimple, formatDate, formatMerchantName } from "@/lib/utils";
 
 export default function ReceiptCard({ receipt }: { receipt: Receipt }) {
   const navigate = useNavigate();
-  const isActive =
-    receipt.status === "Uploaded" || receipt.status === "Processing";
+  const isActive = receipt.status === "Uploaded" || receipt.status === "Processing";
 
   return (
     <motion.div

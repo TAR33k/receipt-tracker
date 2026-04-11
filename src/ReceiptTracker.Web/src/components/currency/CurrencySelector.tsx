@@ -25,10 +25,7 @@ export function CurrencySelector({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
@@ -48,10 +45,7 @@ export function CurrencySelector({
           <Globe className="w-4 h-4 text-[#5E6AD2]" />
           <span className="text-white font-medium">{selectedCurrency}</span>
           <ChevronDown
-            className={cn(
-              "w-4 h-4 text-[#8A8F98] transition-transform",
-              isOpen && "rotate-180",
-            )}
+            className={cn("w-4 h-4 text-[#8A8F98] transition-transform", isOpen && "rotate-180")}
           />
         </button>
         <button
@@ -60,12 +54,7 @@ export function CurrencySelector({
           className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50"
           title="Refresh exchange rates"
         >
-          <RefreshCw
-            className={cn(
-              "w-4 h-4 text-[#8A8F98]",
-              isLoading && "animate-spin",
-            )}
-          />
+          <RefreshCw className={cn("w-4 h-4 text-[#8A8F98]", isLoading && "animate-spin")} />
         </button>
       </div>
 
@@ -94,7 +83,7 @@ export function CurrencySelector({
                   "w-full px-4 py-3 text-left text-sm transition-colors flex items-center justify-between",
                   currency === selectedCurrency
                     ? "bg-[#5E6AD2]/20 text-[#5E6AD2]"
-                    : "text-white hover:bg-white/5",
+                    : "text-white hover:bg-white/5"
                 )}
               >
                 <span>{currency}</span>

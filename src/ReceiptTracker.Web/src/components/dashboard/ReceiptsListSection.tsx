@@ -60,12 +60,7 @@ export function ReceiptsListSection({
               onClick={onClearSearch}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A8F98] hover:text-white transition-colors"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -88,9 +83,7 @@ export function ReceiptsListSection({
             <ReceiptIcon className="w-4 h-4" />
           </div>
           <p className="text-white font-medium mb-2">No receipts yet</p>
-          <p className="text-sm text-[#8A8F98]">
-            Upload your first receipt to get started
-          </p>
+          <p className="text-sm text-[#8A8F98]">Upload your first receipt to get started</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -114,9 +107,7 @@ export function ReceiptsListSection({
             <span className="ml-2">({pagination.totalCount} total)</span>
           </span>
           <button
-            onClick={() =>
-              onPageChange(Math.min(pagination.totalPages, pagination.page + 1))
-            }
+            onClick={() => onPageChange(Math.min(pagination.totalPages, pagination.page + 1))}
             disabled={!pagination.hasNextPage}
             className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >

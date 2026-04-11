@@ -8,11 +8,7 @@ interface MobileUploadModalProps {
   onUpload: (file: File) => void;
 }
 
-export function MobileUploadModal({
-  isOpen,
-  onClose,
-  onUpload,
-}: MobileUploadModalProps) {
+export function MobileUploadModal({ isOpen, onClose, onUpload }: MobileUploadModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,10 +39,7 @@ export function MobileUploadModal({
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">Add Receipt</h3>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-white/5 rounded-full"
-              >
+              <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full">
                 <X className="w-5 h-5 text-[#8A8F98]" />
               </button>
             </div>

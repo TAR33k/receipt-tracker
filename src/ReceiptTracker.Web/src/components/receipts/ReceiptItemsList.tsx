@@ -31,8 +31,7 @@ export function ReceiptItemsList({ items, currency }: ReceiptItemsListProps) {
                     Qty: {item.quantity}
                     {item.price !== null && (
                       <span className="ml-2">
-                        ×{" "}
-                        {formatAmountSimple(item.price, item.priceCurrency)}
+                        × {formatAmountSimple(item.price, item.priceCurrency)}
                       </span>
                     )}
                   </p>
@@ -40,16 +39,10 @@ export function ReceiptItemsList({ items, currency }: ReceiptItemsListProps) {
               </div>
               <div className="text-right">
                 <p className="text-sm font-medium text-[#EDEDEF]">
-                  {formatAmountSimple(
-                    item.totalPrice,
-                    item.totalPriceCurrency ?? currency,
-                  )}
+                  {formatAmountSimple(item.totalPrice, item.totalPriceCurrency ?? currency)}
                 </p>
-                {(item.descriptionConfidence < 0.8 ||
-                  item.totalPriceConfidence < 0.8) && (
-                  <span className="text-[10px] text-amber-400">
-                    Low confidence
-                  </span>
+                {(item.descriptionConfidence < 0.8 || item.totalPriceConfidence < 0.8) && (
+                  <span className="text-[10px] text-amber-400">Low confidence</span>
                 )}
               </div>
             </div>
