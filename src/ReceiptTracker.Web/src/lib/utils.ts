@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { dark } from "@clerk/themes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -238,3 +239,22 @@ export function getMerchantGroupInfo(
 
   return groups;
 }
+
+export const clerkAppearance = {
+  baseTheme: dark,
+  variables: {
+    colorPrimary: "#5E6AD2",
+    colorBackground: "#0a0a0c",
+    colorInputBackground: "rgba(255, 255, 255, 0.05)",
+    colorInputText: "#EDEDEF",
+    colorText: "#EDEDEF",
+    colorTextSecondary: "#8A8F98",
+    colorNeutral: "#8A8F98",
+    borderRadius: "0.75rem",
+    fontFamily: '"Inter", "Geist Sans", system-ui, sans-serif',
+  },
+  elements: {
+    card: "shadow-none bg-transparent",
+    rootBox: "w-full flex justify-center",
+  },
+} as const;

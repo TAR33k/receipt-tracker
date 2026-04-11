@@ -1,26 +1,7 @@
 import { SignUp } from "@clerk/clerk-react";
-import { dark } from "@clerk/themes";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-
-const clerkAppearance = {
-  baseTheme: dark,
-  variables: {
-    colorPrimary: "#5E6AD2",
-    colorBackground: "#0a0a0c",
-    colorInputBackground: "rgba(255, 255, 255, 0.05)",
-    colorInputText: "#EDEDEF",
-    colorText: "#EDEDEF",
-    colorTextSecondary: "#8A8F98",
-    colorNeutral: "#8A8F98",
-    borderRadius: "0.75rem",
-    fontFamily: '"Inter", "Geist Sans", system-ui, sans-serif',
-  },
-  elements: {
-    card: "shadow-none bg-transparent",
-    rootBox: "w-full flex justify-center",
-  },
-} as const;
+import { clerkAppearance } from "@/lib/utils";
 
 export default function SignUpPage() {
   return (
