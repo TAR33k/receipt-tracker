@@ -10,6 +10,7 @@ import Dashboard from "@/pages/DashboardPage";
 import ReceiptDetailPage from "@/pages/ReceiptDetailPage";
 import SignInPage from "@/pages/SignInPage";
 import SignUpPage from "@/pages/SignUpPage";
+import AnalyticsPage from "@/pages/AnalyticsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -87,6 +88,19 @@ function AppRoutes() {
             <>
               <SignedIn>
                 <ReceiptDetailPage />
+              </SignedIn>
+              <SignedOut>
+                <Navigate to="/sign-in" replace />
+              </SignedOut>
+            </>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <>
+              <SignedIn>
+                <AnalyticsPage />
               </SignedIn>
               <SignedOut>
                 <Navigate to="/sign-in" replace />

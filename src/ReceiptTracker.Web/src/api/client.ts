@@ -11,6 +11,18 @@ export class ApiError extends Error {
   }
 }
 
+export function buildUrl(path: string, params?: Record<string, unknown>): string {
+  if (!params) return path;
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null) {
+      query.set(key, String(value));
+    }
+  }
+  const queryString = query.toString();
+  return queryString ? `${path}?${queryString}` : path;
+}
+
 export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = await resolveToken();
 
