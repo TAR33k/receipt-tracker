@@ -15,6 +15,32 @@ public class ReceiptRepository : IReceiptRepository
         _context = context;
     }
 
+    public async Task<IEnumerable<Receipt>> GetForAnalyticsAsync(
+        string userId,
+        DateTime? from = null,
+        DateTime? to = null,
+        ReceiptStatus? status = null,
+        CancellationToken ct = default)
+    {
+        var query = _context.Receipts
+            .Where(r => r.UserId == userId);
+
+        if (status.HasValue)
+        {
+            query = query.Where(r => r.Status == status.Value);
+        }
+
+        if (from.HasValue)
+            query = query.Where(r => r.TransactionDate >= from.Value);
+
+        if (to.HasValue)
+            query = query.Where(r => r.TransactionDate <= to.Value);
+
+        return await query
+            .OrderByDescending(r => r.TransactionDate)
+            .ToListAsync(ct);
+    }
+
     public async Task<Receipt> CreateAsync(Receipt receipt)
     {
         _context.Receipts.Add(receipt);

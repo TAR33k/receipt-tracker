@@ -1,4 +1,5 @@
 using ReceiptTracker.Core.Entities;
+using ReceiptTracker.Core.Enums;
 
 namespace ReceiptTracker.Core.Interfaces;
 
@@ -30,4 +31,12 @@ public interface IReceiptRepository
         decimal? amountMax = null,
         CancellationToken ct = default);
     Task<Receipt> UpdateAsync(Receipt receipt);
+
+    // Analytics queries
+    Task<IEnumerable<Receipt>> GetForAnalyticsAsync(
+        string userId,
+        DateTime? from = null,
+        DateTime? to = null,
+        ReceiptStatus? status = null,
+        CancellationToken ct = default);
 }

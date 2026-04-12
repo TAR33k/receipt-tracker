@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export type DateFormatStyle = "short" | "medium" | "long" | "full" | "input";
+export type DateFormatStyle = "short" | "medium" | "long" | "full" | "input" | "month";
 
 export function formatDate(
   dateString: string | null | undefined,
@@ -50,6 +50,12 @@ export function formatDate(
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
+      });
+
+    case "month":
+      return date.toLocaleDateString("en-GB", {
+        month: "short",
+        year: "numeric",
       });
 
     default:
@@ -190,44 +196,6 @@ export function formatMerchantName(name: string | null | undefined): string {
       return word.toUpperCase();
     })
     .join(" ");
-}
-
-export function getMerchantGroupInfo(
-  receipts: Array<{ merchantName?: string | null }>
-): Map<string, { displayName: string; count: number; originalNames: string[] }> {
-  const groups = new Map<string, { displayName: string; count: number; originalNames: string[] }>();
-
-  for (const receipt of receipts) {
-    if (!receipt.merchantName) continue;
-
-    const normalized = normalizeMerchantName(receipt.merchantName);
-    if (!normalized) continue;
-
-    const existing = groups.get(normalized);
-    if (existing) {
-      existing.count++;
-      existing.originalNames.push(receipt.merchantName);
-
-      const nameFrequency = new Map<string, number>();
-      for (const name of existing.originalNames) {
-        nameFrequency.set(name, (nameFrequency.get(name) || 0) + 1);
-      }
-
-      const mostCommon = [...nameFrequency.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
-
-      if (mostCommon) {
-        existing.displayName = formatMerchantName(mostCommon);
-      }
-    } else {
-      groups.set(normalized, {
-        displayName: formatMerchantName(receipt.merchantName),
-        count: 1,
-        originalNames: [receipt.merchantName],
-      });
-    }
-  }
-
-  return groups;
 }
 
 export const clerkAppearance = {

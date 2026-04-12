@@ -53,6 +53,13 @@ builder.Services.AddSingleton(_ =>
 // Dependency Injection
 builder.Services.AddScoped<IReceiptRepository, ReceiptRepository>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+
+// HttpClient for currency converter
+builder.Services.AddHttpClient<ICurrencyConverter, CurrencyConverter>();
+
+// Memory Cache for analytics
+builder.Services.AddMemoryCache();
 
 // CORS
 builder.Services.AddCors(options =>
